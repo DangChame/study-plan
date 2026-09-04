@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="2027년 변리사 1차 학습 진도판">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>변리사 1차 진도판</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@500;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+:root{
+  --paper:#EDF2F3; --card:#FFFFFF; --card2:#F6FAFA; --line:#D6E1E3; --line2:#E7EEEF;
+  --ink:#131A1D; --ink2:#3B4A50; --muted:#6A7D84; --faint:#93A5AB;
+  --accent:#0E5B6B; --accentSoft:#DCEBEE; --onAccent:#F2FAFB;
+  --good:#2C7A57; --goodSoft:#DEEEE7;
+  --warn:#B4552A; --warnSoft:#F6E6DC;
+  --shadow:0 1px 2px rgba(18,38,44,.05), 0 6px 20px rgba(18,38,44,.055);
+  --r:11px;
+  color-scheme:light;
+}
+:root:not([data-theme="light"]){}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1417; --card:#161F23; --card2:#1B262A; --line:#2A383D; --line2:#223035;
+    --ink:#E3ECEE; --ink2:#B6C6CB; --muted:#8A9DA4; --faint:#6B7E85;
+    --accent:#57B6C8; --accentSoft:#173238; --onAccent:#08181C;
+    --good:#5DBE92; --goodSoft:#16302A;
+    --warn:#E08A56; --warnSoft:#33231A;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1417; --card:#161F23; --card2:#1B262A; --line:#2A383D; --line2:#223035;
+  --ink:#E3ECEE; --ink2:#B6C6CB; --muted:#8A9DA4; --faint:#6B7E85;
+  --accent:#57B6C8; --accentSoft:#173238; --onAccent:#08181C;
+  --good:#5DBE92; --goodSoft:#16302A;
+  --warn:#E08A56; --warnSoft:#33231A;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"IBM Plex Sans KR","Apple SD Gothic Neo",system-ui,sans-serif;
+  font-size:14px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums}
+h1,h2,h3{font-family:"Gothic A1","Apple SD Gothic Neo",system-ui,sans-serif; margin:0; text-wrap:balance; letter-spacing:-.01em}
+.wrap{max-width:1120px; margin:0 auto; padding:0 20px}
+
+/* ---------- header ---------- */
+header{
+  position:sticky; top:0; z-index:20; background:var(--paper);
+  background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--line);
+}
+.hbar{display:flex; align-items:center; gap:16px; height:56px}
+.brand{display:flex; align-items:baseline; gap:9px; margin-right:auto; min-width:0}
+.brand b{font-family:"Gothic A1",sans-serif; font-weight:800; font-size:16px; letter-spacing:-.02em; white-space:nowrap}
+.brand span{color:var(--muted); font-size:11.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+nav{display:flex; gap:2px}
+nav a{
+  color:var(--muted); text-decoration:none; font-size:12.5px; font-weight:500;
+  padding:6px 11px; border-radius:7px; white-space:nowrap;
+}
+nav a:hover{color:var(--ink); background:var(--card2)}
+nav a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.dday{
+  font-family:"IBM Plex Mono",monospace; font-size:11.5px; font-weight:600;
+  color:var(--accent); background:var(--accentSoft); padding:4px 9px; border-radius:6px; white-space:nowrap;
+}
+
+/* ---------- generic ---------- */
+section{padding:40px 0 4px}
+.shead{display:flex; align-items:baseline; gap:12px; margin-bottom:16px; flex-wrap:wrap}
+.shead h2{font-size:20px; font-weight:800}
+.shead p{margin:0; color:var(--muted); font-size:12.5px}
+.eyebrow{
+  font-size:10.5px; font-weight:600; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--faint); font-family:"IBM Plex Mono",monospace;
+}
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow)}
+.hint{color:var(--muted); font-size:12px; margin:10px 2px 0}
+
+/* ---------- today ---------- */
+.today{display:grid; grid-template-columns:1fr 268px; gap:16px; align-items:start}
+.todayMain{padding:20px 22px 18px}
+.tdate{display:flex; align-items:baseline; gap:10px; margin-bottom:14px; flex-wrap:wrap}
+.tdate h1{font-size:26px; font-weight:800}
+.tdate .wd{color:var(--muted); font-size:14px; font-weight:500}
+.tag{font-size:11px; font-weight:600; padding:3px 8px; border-radius:5px; background:var(--accentSoft); color:var(--accent)}
+.tag.rest{background:var(--warnSoft); color:var(--warn)}
+ul.tasks{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:1px}
+ul.tasks li{display:flex; align-items:flex-start; gap:12px; padding:11px 4px; border-top:1px solid var(--line2)}
+ul.tasks li:first-child{border-top:0}
+.chk{
+  appearance:none; flex:0 0 auto; width:19px; height:19px; margin:2px 0 0; border:1.6px solid var(--faint);
+  border-radius:5px; background:var(--card); cursor:pointer; position:relative; transition:.12s;
+}
+.chk:checked{background:var(--good); border-color:var(--good)}
+.chk:checked::after{
+  content:""; position:absolute; left:5.6px; top:2.2px; width:4.5px; height:9px;
+  border:solid #fff; border-width:0 2px 2px 0; transform:rotate(43deg);
+}
+.tk{flex:1; min-width:0}
+.tk .lbl{font-size:10.5px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:var(--faint); font-family:"IBM Plex Mono",monospace}
+.tk .val{font-size:15px; font-weight:600; margin-top:1px; word-break:keep-all}
+.tk .sub{font-size:12px; color:var(--muted); margin-top:2px}
+.tmin{font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--muted); font-weight:500; padding-top:16px; white-space:nowrap}
+li.done{background:var(--goodSoft); border-radius:7px}
+li.done .val{color:var(--good)}
+li.done .tmin,li.done .sub{color:var(--good); opacity:.8}
+
+.todaySide{display:flex; flex-direction:column; gap:12px}
+.stat{padding:15px 17px}
+.stat .k{font-size:10.5px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:var(--faint); font-family:"IBM Plex Mono",monospace}
+.stat .v{font-family:"Gothic A1",sans-serif; font-weight:800; font-size:27px; line-height:1.15; margin-top:3px; letter-spacing:-.02em}
+.stat .s{font-size:12px; color:var(--muted); margin-top:2px}
+.mile{padding:14px 17px}
+.mile .k{font-size:10.5px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:var(--faint); font-family:"IBM Plex Mono",monospace; margin-bottom:8px}
+.mrow{display:flex; justify-content:space-between; gap:10px; padding:5px 0; border-top:1px solid var(--line2); font-size:12.5px}
+.mrow:first-of-type{border-top:0}
+.mrow b{font-family:"IBM Plex Mono",monospace; font-weight:600; color:var(--accent); white-space:nowrap}
+
+/* ---------- progress inputs ---------- */
+.inputs{padding:18px 20px 20px}
+.igrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(158px,1fr)); gap:12px}
+.fld label{display:block; font-size:11px; font-weight:600; color:var(--muted); margin-bottom:5px}
+.fld .row{display:flex; align-items:center; gap:7px}
+input[type=number],input[type=text],input[type=date],select{
+  width:100%; min-width:0; font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
+  font-size:15px; font-weight:600; color:var(--ink); background:var(--card2);
+  border:1px solid var(--line); border-radius:8px; padding:8px 10px;
+}
+.fld .unit{font-size:12px; color:var(--muted); white-space:nowrap}
+.fld .of{font-size:11px; color:var(--faint); font-family:"IBM Plex Mono",monospace; margin-top:4px}
+.btns{display:flex; gap:9px; margin-top:16px; flex-wrap:wrap; align-items:center}
+button{
+  font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;
+  border:1px solid var(--line); background:var(--card2); color:var(--ink);
+  padding:8px 15px; border-radius:8px; transition:.12s;
+}
+button:hover{border-color:var(--accent); color:var(--accent)}
+button.pri{background:var(--accent); border-color:var(--accent); color:var(--onAccent)}
+button.pri:hover{filter:brightness(1.1); color:var(--onAccent)}
+.saveState{font-size:12px; color:var(--muted); margin-left:auto}
+.saveState.ok{color:var(--good)}
+
+/* ---------- tables ---------- */
+.tblwrap{overflow-x:auto; border:1px solid var(--line); border-radius:var(--r); background:var(--card); box-shadow:var(--shadow)}
+table{border-collapse:collapse; width:100%; min-width:660px}
+th,td{padding:9px 12px; text-align:left; border-top:1px solid var(--line2); font-size:13px; vertical-align:top}
+thead th{
+  position:sticky; top:56px; z-index:5; background:var(--card2); border-top:0; border-bottom:1px solid var(--line);
+  font-size:10.5px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:var(--faint);
+  font-family:"IBM Plex Mono",monospace; white-space:nowrap;
+}
+td.num,th.num{text-align:right; font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; white-space:nowrap}
+td.d{white-space:nowrap; font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:12.5px}
+td.d .wd{color:var(--faint); font-weight:400; font-size:11px; margin-left:3px}
+tr.wkstart td{border-top:1px solid var(--line)}
+tr.past td{color:var(--faint)}
+tr.now{background:var(--accentSoft)}
+tr.now td{border-top-color:transparent}
+tr.now td.d{color:var(--accent)}
+.est{color:var(--faint); font-size:11px}
+.pill{
+  display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600;
+  padding:2px 7px; border-radius:5px; background:var(--accentSoft); color:var(--accent); white-space:nowrap;
+}
+.pill.g{background:var(--goodSoft); color:var(--good)}
+.pill.w{background:var(--warnSoft); color:var(--warn)}
+.legend{display:flex; gap:14px; flex-wrap:wrap; margin-top:10px; font-size:11.5px; color:var(--muted)}
+.legend span{display:flex; align-items:center; gap:5px}
+.sw{width:11px; height:11px; border-radius:3px; display:inline-block}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex; gap:3px; margin-bottom:14px; flex-wrap:wrap}
+.tabs button{border-radius:8px; padding:7px 14px; font-size:12.5px; background:transparent; border-color:transparent; color:var(--muted)}
+.tabs button:hover{background:var(--card2); color:var(--ink); border-color:transparent}
+.tabs button[aria-selected="true"]{background:var(--accent); border-color:var(--accent); color:var(--onAccent)}
+
+/* ---------- cycle bars ---------- */
+.cyc{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:14px; margin-bottom:16px}
+.cycCard{padding:16px 18px}
+.cycTop{display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:3px}
+.cycTop h3{font-size:14.5px; font-weight:700}
+.cycTop .pg{font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600; color:var(--good)}
+.bar{height:7px; border-radius:4px; background:var(--line2); overflow:hidden; margin:9px 0 8px}
+.bar i{display:block; height:100%; border-radius:4px; background:var(--good)}
+.cycMeta{display:flex; gap:16px; font-size:11.5px; color:var(--muted); flex-wrap:wrap}
+.cycMeta b{color:var(--ink2); font-family:"IBM Plex Mono",monospace; font-weight:600}
+
+/* ---------- rules ---------- */
+.rules{display:grid; grid-template-columns:repeat(auto-fit,minmax(268px,1fr)); gap:14px}
+.rule{padding:16px 18px}
+.rule h3{font-size:13.5px; font-weight:700; margin-bottom:9px; display:flex; align-items:center; gap:7px}
+.rule h3 .dot{width:6px; height:6px; border-radius:50%; background:var(--accent); flex:0 0 auto}
+.rule ul{margin:0; padding-left:17px; color:var(--ink2)}
+.rule li{font-size:12.5px; margin-bottom:5px}
+.rule li b{color:var(--ink)}
+.rule.warn h3 .dot{background:var(--warn)}
+
+footer{margin-top:52px; border-top:1px solid var(--line); padding:20px 0 40px; color:var(--faint); font-size:11.5px}
+footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap}
+
+@media (max-width:820px){
+  .today{grid-template-columns:1fr}
+  .todaySide{flex-direction:row; flex-wrap:wrap}
+  .todaySide>*{flex:1 1 190px}
+  thead th{top:0}
+  .brand span{display:none}
+  nav a{padding:6px 8px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
+</style>
+
+</head>
+<body>
+<header>
+  <div class="wrap hbar">
+    <div class="brand"><b>변리사 1차 진도판</b><span id="brandSub">2027년 1차 · 자연과학 + 민공연 + 특허</span></div>
+    <nav>
+      <a href="#today">오늘</a>
+      <a href="#progress">진도 입력</a>
+      <a href="#schedule">일정</a>
+      <a href="#cycles">회독</a>
+      <a href="#rules">규칙</a>
+    </nav>
+    <div class="dday mono" id="dday">D-</div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section id="today">
+  <div class="today">
+    <div class="card todayMain">
+      <div class="tdate">
+        <h1 id="tDate">—</h1>
+        <span class="wd" id="tWd"></span>
+        <span class="tag" id="tTag"></span>
+      </div>
+      <ul class="tasks" id="tTasks"></ul>
+    </div>
+    <div class="todaySide">
+      <div class="card stat">
+        <div class="k">오늘 순공</div>
+        <div class="v mono" id="tTotal">—</div>
+        <div class="s" id="tTotalSub">강의 + 회독 + 민소 + 글씨</div>
+      </div>
+      <div class="card mile">
+        <div class="k">다가오는 완강·완독</div>
+        <div id="tMiles"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="progress">
+  <div class="shead">
+    <span class="eyebrow">01</span>
+    <h2>진도 입력</h2>
+    <p>여기 숫자만 고치면 아래 일정이 전부 다시 깔린다.</p>
+  </div>
+  <div class="card inputs">
+    <div class="igrid" id="igrid"></div>
+    <div class="btns">
+      <button class="pri" id="btnSave">저장</button>
+      <button id="btnToday">오늘 진도 반영</button>
+      <button id="btnReset">되돌리기</button>
+      <button id="btnLink">이 진도로 링크 복사</button>
+      <span class="saveState" id="saveState"></span>
+    </div>
+    <p class="hint" id="syncHint"></p>
+  </div>
+</section>
+
+<section id="schedule">
+  <div class="shead">
+    <span class="eyebrow">02</span>
+    <h2>일정</h2>
+    <p id="schedSub"></p>
+  </div>
+  <div class="tabs" id="schedTabs"></div>
+  <div class="tblwrap">
+    <table>
+      <thead><tr>
+        <th>날짜</th><th>자연과학 강의</th><th class="num">강</th><th class="num">강의+예습</th>
+        <th>민공연</th><th>특허 객관식</th><th class="num">하루 총합</th>
+      </tr></thead>
+      <tbody id="schedBody"></tbody>
+    </table>
+  </div>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--accentSoft)"></i>오늘</span>
+    <span><i class="sw" style="background:var(--line2)"></i>지난 날</span>
+    <span><i class="sw" style="background:var(--warnSoft)"></i>7시간 초과</span>
+    <span>* = 미개강 추정치</span>
+  </div>
+</section>
+
+<section id="cycles">
+  <div class="shead">
+    <span class="eyebrow">03</span>
+    <h2>회독</h2>
+    <p>민공연 · 특허 객관식 — 학습일 30일(6주) 1회독</p>
+  </div>
+  <div class="cyc" id="cycCards"></div>
+  <div class="tabs" id="cycTabs"></div>
+  <div class="tblwrap">
+    <table>
+      <thead><tr>
+        <th>날짜</th><th>범위</th><th class="num">쪽수</th><th class="num">소요</th><th class="num">누적</th>
+      </tr></thead>
+      <tbody id="cycBody"></tbody>
+    </table>
+  </div>
+  <p class="hint" id="cycHint"></p>
+</section>
+
+<section id="rules">
+  <div class="shead">
+    <span class="eyebrow">04</span>
+    <h2>규칙</h2>
+    <p>계획을 다시 짤 때 지켜야 하는 것들</p>
+  </div>
+  <div class="rules" id="rulesBox"></div>
+</section>
+
+<footer class="wrap">
+  <div class="fl">
+    <span id="footSrc">2027년 변리사 1차 · 개인 학습 진도판</span>
+    <span id="footStamp"></span>
+  </div>
+</footer>
+</main>
+
+<script>
+const INV = [{"id":"chemPast","name":"화학 기출풀이","short":"화학기출","prep":20,"est":false,"lectures":[{"n":"1강","m":55.45},{"n":"2강","m":56.68},{"n":"3강","m":41.88},{"n":"4강","m":66.48},{"n":"5강","m":52.95},{"n":"6강","m":35.63},{"n":"7강","m":80.58},{"n":"8강","m":52.15},{"n":"9강","m":48.45},{"n":"10강","m":78.37},{"n":"11강","m":52.37},{"n":"12강","m":53.7},{"n":"13강","m":77.78},{"n":"14강","m":60.18},{"n":"15강","m":32.22},{"n":"16강","m":65.8},{"n":"17강","m":56.12},{"n":"18강","m":52.38},{"n":"19강","m":73.13},{"n":"20강","m":49.17},{"n":"21강","m":39.38},{"n":"22강","m":81.57},{"n":"23강","m":38.28},{"n":"24강","m":56.32},{"n":"25강","m":94.82}],"count":25},{"id":"phyIntro","name":"물리 입문","short":"물리입문","prep":0,"est":false,"lectures":[{"n":"1회1강","m":18},{"n":"1회2강","m":44},{"n":"1회3강","m":40},{"n":"1회4강","m":39},{"n":"2회1강","m":69},{"n":"2회2강","m":55},{"n":"2회3강","m":57},{"n":"3회1강","m":66},{"n":"3회2강","m":60},{"n":"3회3강","m":66},{"n":"4회1강","m":54},{"n":"4회2강","m":49},{"n":"4회3강","m":46}],"count":13},{"id":"phyBase","name":"물리 기본","short":"물리기본","prep":0,"est":false,"lectures":[{"n":"1회1강","m":64},{"n":"1회2강","m":63},{"n":"1회3강","m":64},{"n":"2회1강","m":66},{"n":"2회2강","m":66},{"n":"2회3강","m":62},{"n":"3회1강","m":63},{"n":"3회2강","m":59},{"n":"3회3강","m":67},{"n":"4회1강","m":66},{"n":"4회2강","m":58},{"n":"4회3강","m":68},{"n":"5회1강","m":56},{"n":"5회2강","m":65},{"n":"5회3강","m":58},{"n":"6회1강","m":63},{"n":"6회2강","m":64},{"n":"6회3강","m":55},{"n":"7회1강","m":59},{"n":"7회2강","m":62},{"n":"7회3강","m":64},{"n":"8회1강","m":60},{"n":"8회2강","m":64},{"n":"8회3강","m":51},{"n":"9회1강","m":58},{"n":"9회2강","m":67},{"n":"9회3강","m":56},{"n":"10회1강","m":63},{"n":"10회2강","m":61},{"n":"10회3강","m":58},{"n":"11회1강","m":60},{"n":"11회2강","m":62},{"n":"11회3강","m":66},{"n":"12회1강","m":66},{"n":"12회2강","m":63},{"n":"12회3강","m":64},{"n":"13회1강","m":60},{"n":"13회2강","m":64},{"n":"13회3강","m":65},{"n":"14회1강","m":61},{"n":"14회2강","m":62},{"n":"14회3강","m":59},{"n":"15회1강","m":68},{"n":"15회2강","m":65},{"n":"15회3강","m":59},{"n":"16회1강","m":60},{"n":"16회2강","m":62},{"n":"16회3강","m":66},{"n":"17회1강","m":58},{"n":"17회2강","m":60},{"n":"17회3강","m":62},{"n":"18회1강","m":66},{"n":"18회2강","m":59},{"n":"18회3강","m":66},{"n":"19회1강","m":65},{"n":"19회2강","m":60},{"n":"19회3강","m":70},{"n":"20회1강","m":63},{"n":"20회2강","m":65},{"n":"20회3강","m":64},{"n":"21회1강","m":66},{"n":"21회2강","m":63},{"n":"21회3강","m":59},{"n":"22회1강","m":61},{"n":"22회2강","m":36},{"n":"23회1강","m":40}],"count":66},{"id":"phyPast1","name":"물리 기출 1단계","short":"물리기출1","prep":30,"est":false,"lectures":[{"n":"1회1강","m":69},{"n":"1회2강","m":59},{"n":"1회3강","m":64},{"n":"2회1강","m":58},{"n":"2회2강","m":68},{"n":"2회3강","m":60},{"n":"3회1강","m":64},{"n":"3회2강","m":60},{"n":"3회3강","m":65},{"n":"4회1강","m":60},{"n":"4회2강","m":60},{"n":"5회1강","m":59},{"n":"5회2강","m":64},{"n":"5회3강","m":75},{"n":"6회1강","m":68},{"n":"6회2강","m":66},{"n":"6회3강","m":58},{"n":"7회1강","m":58},{"n":"7회2강","m":62},{"n":"7회3강","m":66},{"n":"8회1강","m":62},{"n":"8회2강","m":50}],"count":22},{"id":"phyPast2","name":"물리 기출 2단계","short":"물리기출2","prep":30,"est":false,"lectures":[{"n":"1회1강","m":64},{"n":"1회2강","m":68},{"n":"1회3강","m":59},{"n":"2회1강","m":52},{"n":"2회2강","m":63},{"n":"2회3강","m":58},{"n":"3회1강","m":60},{"n":"3회2강","m":63},{"n":"3회3강","m":64},{"n":"4회1강","m":62},{"n":"4회2강","m":62},{"n":"4회3강","m":63},{"n":"5회1강","m":61.5,"e":1},{"n":"5회2강","m":61.5,"e":1},{"n":"5회3강","m":61.5,"e":1},{"n":"6회1강","m":61.5,"e":1},{"n":"6회2강","m":61.5,"e":1},{"n":"6회3강","m":61.5,"e":1}],"count":18},{"id":"chemMC","name":"화학 객관식","short":"화학객관식","prep":20,"est":true,"lectures":[{"n":"1강","m":58.1,"e":1},{"n":"2강","m":58.1,"e":1},{"n":"3강","m":58.1,"e":1},{"n":"4강","m":58.1,"e":1},{"n":"5강","m":58.1,"e":1},{"n":"6강","m":58.1,"e":1},{"n":"7강","m":58.1,"e":1},{"n":"8강","m":58.1,"e":1},{"n":"9강","m":58.1,"e":1},{"n":"10강","m":58.1,"e":1},{"n":"11강","m":58.1,"e":1},{"n":"12강","m":58.1,"e":1},{"n":"13강","m":58.1,"e":1},{"n":"14강","m":58.1,"e":1},{"n":"15강","m":58.1,"e":1},{"n":"16강","m":58.1,"e":1},{"n":"17강","m":58.1,"e":1},{"n":"18강","m":58.1,"e":1},{"n":"19강","m":58.1,"e":1},{"n":"20강","m":58.1,"e":1},{"n":"21강","m":58.1,"e":1},{"n":"22강","m":58.1,"e":1},{"n":"23강","m":58.1,"e":1},{"n":"24강","m":58.1,"e":1},{"n":"25강","m":58.1,"e":1},{"n":"26강","m":58.1,"e":1},{"n":"27강","m":58.1,"e":1},{"n":"28강","m":58.1,"e":1},{"n":"29강","m":58.1,"e":1},{"n":"30강","m":58.1,"e":1}],"count":30},{"id":"chemFin","name":"화학 최종정리","short":"화학최종","prep":0,"est":true,"lectures":[{"n":"1강","m":58.1,"e":1},{"n":"2강","m":58.1,"e":1},{"n":"3강","m":58.1,"e":1},{"n":"4강","m":58.1,"e":1},{"n":"5강","m":58.1,"e":1},{"n":"6강","m":58.1,"e":1},{"n":"7강","m":58.1,"e":1},{"n":"8강","m":58.1,"e":1},{"n":"9강","m":58.1,"e":1},{"n":"10강","m":58.1,"e":1}],"count":10},{"id":"bioBase","name":"생물 기본","short":"생물기본","prep":0,"est":false,"lectures":[{"n":"1회1강","m":48},{"n":"1회2강","m":51},{"n":"1회3강","m":78},{"n":"2회1강","m":59},{"n":"2회2강","m":66},{"n":"2회3강","m":71},{"n":"3회1강","m":46},{"n":"3회2강","m":54},{"n":"3회3강","m":42},{"n":"3회4강","m":58},{"n":"4회1강","m":49},{"n":"4회2강","m":81},{"n":"4회3강","m":69},{"n":"5회1강","m":63},{"n":"5회2강","m":75},{"n":"5회3강","m":73},{"n":"6회1강","m":43},{"n":"6회2강","m":75},{"n":"6회3강","m":77},{"n":"7회1강","m":61},{"n":"7회2강","m":53},{"n":"7회3강","m":69},{"n":"7회4강","m":24},{"n":"8회1강","m":65},{"n":"8회2강","m":79},{"n":"8회3강","m":67},{"n":"9회1강","m":49},{"n":"9회2강","m":57},{"n":"9회3강","m":64},{"n":"10회1강","m":57},{"n":"10회2강","m":65},{"n":"10회3강","m":53},{"n":"11회1강","m":53},{"n":"11회2강","m":63},{"n":"11회3강","m":78},{"n":"12회1강","m":59},{"n":"12회2강","m":36},{"n":"12회3강","m":62},{"n":"12회4강","m":43},{"n":"13회1강","m":45},{"n":"13회2강","m":80},{"n":"13회3강","m":81},{"n":"14회1강","m":57},{"n":"14회2강","m":57},{"n":"14회3강","m":36},{"n":"14회4강","m":60},{"n":"15회1강","m":59},{"n":"15회2강","m":73},{"n":"15회3강","m":64},{"n":"16회1강","m":48},{"n":"16회2강","m":68},{"n":"16회3강","m":56},{"n":"17회1강","m":56},{"n":"17회2강","m":67},{"n":"17회3강","m":68},{"n":"18회1강","m":49},{"n":"18회2강","m":52},{"n":"18회3강","m":58},{"n":"18회4강","m":50},{"n":"19회1강","m":53},{"n":"19회2강","m":45},{"n":"19회3강","m":44},{"n":"19회4강","m":40},{"n":"20회1강","m":46},{"n":"20회2강","m":59},{"n":"20회3강","m":81},{"n":"21회1강","m":54},{"n":"21회2강","m":67},{"n":"21회3강","m":65},{"n":"22회1강","m":38},{"n":"22회2강","m":31},{"n":"22회3강","m":15}],"count":72},{"id":"bioPast","name":"생물 핵심기출","short":"생물기출","prep":10,"est":true,"lectures":[{"n":"1강","m":57.7,"e":1},{"n":"2강","m":57.7,"e":1},{"n":"3강","m":57.7,"e":1},{"n":"4강","m":57.7,"e":1},{"n":"5강","m":57.7,"e":1},{"n":"6강","m":57.7,"e":1},{"n":"7강","m":57.7,"e":1},{"n":"8강","m":57.7,"e":1},{"n":"9강","m":57.7,"e":1},{"n":"10강","m":57.7,"e":1},{"n":"11강","m":57.7,"e":1},{"n":"12강","m":57.7,"e":1},{"n":"13강","m":57.7,"e":1},{"n":"14강","m":57.7,"e":1},{"n":"15강","m":57.7,"e":1},{"n":"16강","m":57.7,"e":1},{"n":"17강","m":57.7,"e":1},{"n":"18강","m":57.7,"e":1},{"n":"19강","m":57.7,"e":1},{"n":"20강","m":57.7,"e":1},{"n":"21강","m":57.7,"e":1},{"n":"22강","m":57.7,"e":1},{"n":"23강","m":57.7,"e":1},{"n":"24강","m":57.7,"e":1},{"n":"25강","m":57.7,"e":1},{"n":"26강","m":57.7,"e":1},{"n":"27강","m":57.7,"e":1},{"n":"28강","m":57.7,"e":1},{"n":"29강","m":57.7,"e":1},{"n":"30강","m":57.7,"e":1}],"count":30},{"id":"bioMC","name":"생물 객관식","short":"생물객관식","prep":10,"est":true,"lectures":[{"n":"1강","m":57.7,"e":1},{"n":"2강","m":57.7,"e":1},{"n":"3강","m":57.7,"e":1},{"n":"4강","m":57.7,"e":1},{"n":"5강","m":57.7,"e":1},{"n":"6강","m":57.7,"e":1},{"n":"7강","m":57.7,"e":1},{"n":"8강","m":57.7,"e":1},{"n":"9강","m":57.7,"e":1},{"n":"10강","m":57.7,"e":1},{"n":"11강","m":57.7,"e":1},{"n":"12강","m":57.7,"e":1},{"n":"13강","m":57.7,"e":1},{"n":"14강","m":57.7,"e":1},{"n":"15강","m":57.7,"e":1},{"n":"16강","m":57.7,"e":1},{"n":"17강","m":57.7,"e":1},{"n":"18강","m":57.7,"e":1},{"n":"19강","m":57.7,"e":1},{"n":"20강","m":57.7,"e":1},{"n":"21강","m":57.7,"e":1},{"n":"22강","m":57.7,"e":1},{"n":"23강","m":57.7,"e":1},{"n":"24강","m":57.7,"e":1},{"n":"25강","m":57.7,"e":1},{"n":"26강","m":57.7,"e":1},{"n":"27강","m":57.7,"e":1},{"n":"28강","m":57.7,"e":1},{"n":"29강","m":57.7,"e":1},{"n":"30강","m":57.7,"e":1}],"count":30},{"id":"bioFin","name":"생물 최종정리","short":"생물최종","prep":0,"est":true,"lectures":[{"n":"1강","m":57.7,"e":1},{"n":"2강","m":57.7,"e":1},{"n":"3강","m":57.7,"e":1},{"n":"4강","m":57.7,"e":1},{"n":"5강","m":57.7,"e":1},{"n":"6강","m":57.7,"e":1},{"n":"7강","m":57.7,"e":1},{"n":"8강","m":57.7,"e":1},{"n":"9강","m":57.7,"e":1},{"n":"10강","m":57.7,"e":1},{"n":"11강","m":57.7,"e":1},{"n":"12강","m":57.7,"e":1},{"n":"13강","m":57.7,"e":1},{"n":"14강","m":57.7,"e":1},{"n":"15강","m":57.7,"e":1}],"count":15},{"id":"earthBase","name":"지구과학 기본","short":"지구기본","prep":0,"est":false,"lectures":[{"n":"1회1강","m":90},{"n":"1회2강","m":76},{"n":"1회3강","m":57},{"n":"2회1강","m":80},{"n":"2회2강","m":61},{"n":"2회3강","m":90},{"n":"3회1강","m":97},{"n":"3회2강","m":88},{"n":"3회3강","m":54},{"n":"4회1강","m":72},{"n":"4회2강","m":93},{"n":"4회3강","m":54},{"n":"5회1강","m":97},{"n":"5회2강","m":80},{"n":"5회3강","m":74},{"n":"6회1강","m":92},{"n":"6회2강","m":56},{"n":"6회3강","m":53},{"n":"7회1강","m":107},{"n":"7회2강","m":71},{"n":"7회3강","m":55},{"n":"8회1강","m":78},{"n":"8회2강","m":80}],"count":23},{"id":"earthMC","name":"지구과학 문풀","short":"지구문풀","prep":10,"est":true,"lectures":[{"n":"1강","m":76.3,"e":1},{"n":"2강","m":76.3,"e":1},{"n":"3강","m":76.3,"e":1},{"n":"4강","m":76.3,"e":1},{"n":"5강","m":76.3,"e":1},{"n":"6강","m":76.3,"e":1},{"n":"7강","m":76.3,"e":1},{"n":"8강","m":76.3,"e":1},{"n":"9강","m":76.3,"e":1},{"n":"10강","m":76.3,"e":1}],"count":10}];
+
+/* ---------------- 기본 설정 ---------------- */
+const DEFAULTS = {
+  progress:{ chemPast:2, phyIntro:4, phyBase:0, phyPast1:0, phyPast2:0, chemMC:0, chemFin:0,
+             bioBase:0, bioPast:0, bioMC:0, bioFin:0, earthBase:0, earthMC:0,
+             mgPage:123, ptPage:30, mgPageStudy:48 },
+  settings:{
+    rampStart:"2026-09-04",
+    ramp:[80,100,130,160,185],     // 주차별 자연과학 목표(분), 이후 마지막 값 유지
+    mgSpeed:25, ptSpeed:30,        // p/h
+    mgEnd:1025, mgStart:2, ptEnd:630, ptStart:1,
+    cycle1End:"2026-10-09", cycleDays:30,
+    minsoMin:15, writeMin:20,
+    holidays:[], useHolidays:false
+  },
+  checks:{}
+};
+const HOLIDAY_SUGGEST = [
+  ["2026-09-24","추석 연휴"],["2026-09-25","추석"],
+  ["2026-10-05","대체공휴일(개천절)"],["2026-10-09","한글날"],
+  ["2026-12-25","성탄절"],["2027-01-01","신정"]
+];
+const EXAM = "2027-02-20";
+const ORDER = ["chemPast","phyIntro","phyBase","phyPast1","phyPast2","chemMC","chemFin",
+               "bioBase","bioPast","bioMC","bioFin","earthBase","earthMC"];
+
+let S = JSON.parse(JSON.stringify(DEFAULTS));
+let DB = null, dbDoc = null;
+
+/* ---------------- 날짜 유틸 ---------------- */
+const WD = ["일","월","화","수","목","금","토"];
+const iso = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const parse = s => { const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); };
+const addD = (d,n)=>{ const x=new Date(d); x.setDate(x.getDate()+n); return x; };
+const md = d => (d.getMonth()+1)+"/"+d.getDate();
+function today(){ const n=new Date(); return new Date(n.getFullYear(),n.getMonth(),n.getDate()); }
+function isStudyDay(d){
+  if(d.getDay()===0||d.getDay()===6) return false;
+  if(S.settings.useHolidays && S.settings.holidays.includes(iso(d))) return false;
+  return true;
+}
+function studyDays(from,count){
+  const out=[]; let c=new Date(from);
+  while(out.length<count){ if(isStudyDay(c)) out.push(new Date(c)); c=addD(c,1); }
+  return out;
+}
+function studyDaysUntil(from,to){
+  const out=[]; let c=new Date(from);
+  while(c<=to){ if(isStudyDay(c)) out.push(new Date(c)); c=addD(c,1); }
+  return out;
+}
+function fm(min){
+  const m=Math.round(min); const h=Math.floor(m/60);
+  return h ? h+"h"+String(m%60).padStart(2,"0")+"m" : m+"m";
+}
+
+/* ---------------- 강의 시퀀스 ---------------- */
+function lectureQueue(){
+  const q=[];
+  for(const id of ORDER){
+    const c=INV.find(x=>x.id===id); if(!c) continue;
+    const done=S.progress[id]||0;
+    c.lectures.forEach((l,i)=>{
+      if(i<done) return;
+      q.push({course:c.short, courseId:id, name:l.n, min:l.m/2, prep:c.prep, est:!!l.e,
+              cost:l.m/2 + c.prep});
+    });
+  }
+  return q;
+}
+function mondayOf(d){ const x=new Date(d); const k=(x.getDay()+6)%7; return addD(x,-k); }
+function rampTarget(d){
+  const start=parse(S.settings.rampStart);
+  if(d<start) return S.settings.ramp[0];
+  const weeks=Math.round((mondayOf(d)-mondayOf(start))/6048e5);
+  return S.settings.ramp[Math.min(Math.max(weeks,0),S.settings.ramp.length-1)];
+}
+
+/* ---------------- 회독 배분 ---------------- */
+function cycleSlices(startDate, curPage, endDate, startPage, endPage, speed){
+  // 회독1: 오늘부터 endDate까지 남은 페이지 분배
+  const days=studyDaysUntil(startDate,endDate);
+  const out=[];
+  if(days.length && curPage<endPage){
+    const from=Math.max(curPage+1,startPage), total=Math.max(0,endPage-from+1);
+    const base=Math.floor(total/days.length), ex=total%days.length; let p=from;
+    days.forEach((d,i)=>{
+      const c=base+(i<ex?1:0);
+      out.push({date:d, a:p, b:p+c-1, n:c, min:c/speed*60, cycle:1});
+      p+=c;
+    });
+  }
+  // 회독2 이후
+  let cur=addD(endDate,1), cyc=2;
+  while(cyc<=5){
+    const ds=studyDays(cur,S.settings.cycleDays);
+    const total=endPage-startPage+1, base=Math.floor(total/ds.length), ex=total%ds.length;
+    let p=startPage;
+    ds.forEach((d,i)=>{
+      const c=base+(i<ex?1:0);
+      out.push({date:d, a:p, b:p+c-1, n:c, min:c/speed*60, cycle:cyc});
+      p+=c;
+    });
+    cur=addD(ds[ds.length-1],1); cyc++;
+  }
+  return out;
+}
+
+/* ---------------- 일정 산출 ---------------- */
+let PLAN=null;
+function build(){
+  const t=today();
+  const start = t < parse(S.settings.rampStart) ? parse(S.settings.rampStart) : t;
+  const q=lectureQueue();
+  const days=studyDays(start,150);
+  const st=S.settings;
+  const mg=cycleSlices(start,S.progress.mgPage,parse(st.cycle1End),st.mgStart,st.mgEnd,st.mgSpeed);
+  const pt=cycleSlices(start,S.progress.ptPage,parse(st.cycle1End),st.ptStart,st.ptEnd,st.ptSpeed);
+  const mgS=cycleSlices(start,S.progress.mgPageStudy,parse(st.cycle1End),st.mgStart,st.mgEnd,st.mgSpeed);
+  const byDate=(arr)=>{ const m={}; arr.forEach(x=>m[iso(x.date)]=x); return m; };
+  const MG=byDate(mg), PT=byDate(pt), MGS=byDate(mgS);
+
+  let i=0; const rows=[];
+  for(const d of days){
+    if(i>=q.length && rows.length>0 && !MG[iso(d)]) break;
+    const T=rampTarget(d); let acc=0; const got=[];
+    while(i<q.length){
+      const c=q[i].cost;
+      if(got.length && acc+c > T*1.18) break;
+      got.push(q[i]); acc+=c; i++;
+      if(acc >= T*0.88) break;
+    }
+    const m=MG[iso(d)], p=PT[iso(d)], ms=MGS[iso(d)];
+    const total=acc + (m?m.min:0) + (p?p.min:0) + st.minsoMin + st.writeMin;
+    rows.push({date:d, lec:got, lecMin:acc, mg:m, pt:p, mgS:ms, total, target:T});
+  }
+  PLAN={rows, queue:q, mg, pt, mgS};
+  return PLAN;
+}
+
+function lecLabel(got){
+  if(!got.length) return "—";
+  const f=got[0], l=got[got.length-1];
+  const one=got.length===1;
+  const nm = one ? `${f.course} ${f.name}` :
+    (f.course===l.course ? `${f.course} ${f.name} - ${l.name}` : `${f.course} ${f.name} - ${l.course} ${l.name}`);
+  return nm + (got.some(x=>x.est) ? ' <span class="est">*</span>' : "");
+}
+function milestones(){
+  const out=[]; const q=PLAN.queue;
+  const lastIdx={};
+  q.forEach((x,i)=>{ lastIdx[x.courseId]=i; });
+  const rows=PLAN.rows; let seen=0; const dayOf={};
+  rows.forEach(r=>{ r.lec.forEach(()=>{ dayOf[seen]=r.date; seen++; }); });
+  for(const id of ORDER){
+    if(lastIdx[id]===undefined) continue;
+    const c=INV.find(x=>x.id===id);
+    const d=dayOf[lastIdx[id]];
+    if(d) out.push({name:c.name+" 완강", date:d});
+    if(out.length>=3) break;
+  }
+  const c1=parse(S.settings.cycle1End);
+  out.push({name:"민공연·특허 회독1", date:c1});
+  out.sort((a,b)=>a.date-b.date);
+  return out.slice(0,4);
+}
+
+/* ---------------- 렌더 ---------------- */
+function renderToday(){
+  const t=today();
+  const row=PLAN.rows.find(r=>iso(r.date)===iso(t));
+  document.getElementById("tDate").textContent=(t.getMonth()+1)+"월 "+t.getDate()+"일";
+  document.getElementById("tWd").textContent=WD[t.getDay()]+"요일";
+  const tag=document.getElementById("tTag");
+  const ul=document.getElementById("tTasks");
+  const key=iso(t); S.checks[key]=S.checks[key]||{};
+
+  if(!row){
+    tag.textContent="휴식일"; tag.className="tag rest";
+    ul.innerHTML='<li><div class="tk"><div class="val">오늘은 계획된 학습일이 아니다.</div><div class="sub">주 5일(월-금) 공부 + 2일 휴식이 원칙.</div></div></li>';
+    document.getElementById("tTotal").textContent="—";
+    document.getElementById("tTotalSub").textContent="쉬는 날";
+  }else{
+    const over=row.total>420;
+    tag.textContent = over ? "7시간 초과" : "학습일";
+    tag.className = over ? "tag rest" : "tag";
+    const items=[
+      {id:"sci", lbl:"자연과학", val:lecLabel(row.lec), sub:row.lec.length+"강 · 예습 "+fm(row.lec.reduce((a,b)=>a+b.prep,0))+" + 강의 "+fm(row.lec.reduce((a,b)=>a+b.min,0)), min:row.lecMin},
+      row.mg&&{id:"mg", lbl:"민공연", val:row.mg.a+" - "+row.mg.b+"p", sub:row.mg.n+"p · "+S.settings.mgSpeed+"p/h"+(row.mgS?" · 스터디 "+row.mgS.a+"-"+row.mgS.b+"p":""), min:row.mg.min},
+      row.pt&&{id:"pt", lbl:"특허 객관식", val:row.pt.a+" - "+row.pt.b+"p", sub:row.pt.n+"p · "+S.settings.ptSpeed+"p/h (미측정)", min:row.pt.min},
+      {id:"ms", lbl:"민소 객관식", val:"9-10문항", sub:"채점 세션에서 출제", min:S.settings.minsoMin},
+      {id:"wr", lbl:"글씨 교정", val:"법률용어 + 속도 예문", sub:"매주 금요일 주간점검", min:S.settings.writeMin}
+    ].filter(Boolean);
+    ul.innerHTML=items.map(x=>{
+      const ck=S.checks[key][x.id]?" checked":"";
+      return `<li class="${S.checks[key][x.id]?"done":""}" data-k="${x.id}">
+        <input type="checkbox" class="chk" data-k="${x.id}"${ck} aria-label="${x.lbl} 완료">
+        <div class="tk"><div class="lbl">${x.lbl}</div><div class="val">${x.val}</div><div class="sub">${x.sub}</div></div>
+        <div class="tmin">${fm(x.min)}</div></li>`;
+    }).join("");
+    const doneMin=items.filter(x=>S.checks[key][x.id]).reduce((a,b)=>a+b.min,0);
+    document.getElementById("tTotal").textContent=fm(row.total);
+    document.getElementById("tTotalSub").textContent = doneMin ? "완료 "+fm(doneMin)+" · 남음 "+fm(row.total-doneMin) : "강의 + 회독 + 민소 + 글씨";
+  }
+  const ms=milestones();
+  document.getElementById("tMiles").innerHTML=ms.map(m=>
+    `<div class="mrow"><span>${m.name}</span><b>${md(m.date)} (${WD[m.date.getDay()]})</b></div>`).join("");
+  const dd=Math.round((parse(EXAM)-t)/864e5);
+  document.getElementById("dday").textContent="1차 D-"+dd;
+}
+
+let schedScope="all";
+function renderSched(){
+  const t=today();
+  const rows=PLAN.rows.filter(r=>{
+    if(schedScope==="all") return true;
+    return (r.date.getMonth()+1)===Number(schedScope) ;
+  });
+  const body=document.getElementById("schedBody");
+  body.innerHTML=rows.map(r=>{
+    const cls=[]; if(iso(r.date)===iso(t)) cls.push("now"); else if(r.date<t) cls.push("past");
+    if(r.date.getDay()===1) cls.push("wkstart");
+    const tot=r.total>420?`<span class="pill w">${fm(r.total)}</span>`:fm(r.total);
+    return `<tr class="${cls.join(" ")}">
+      <td class="d">${md(r.date)}<span class="wd">${WD[r.date.getDay()]}</span></td>
+      <td>${lecLabel(r.lec)}</td>
+      <td class="num">${r.lec.length||""}</td>
+      <td class="num">${r.lecMin?fm(r.lecMin):"—"}</td>
+      <td class="num">${r.mg?r.mg.a+"-"+r.mg.b+"p":"—"}</td>
+      <td class="num">${r.pt?r.pt.a+"-"+r.pt.b+"p":"—"}</td>
+      <td class="num">${tot}</td></tr>`;
+  }).join("");
+  const over=rows.filter(r=>r.total>420).length;
+  document.getElementById("schedSub").textContent =
+    `${rows.length}일 · 하루 평균 ${fm(rows.reduce((a,b)=>a+b.total,0)/(rows.length||1))}` +
+    (over?` · 7시간 초과 ${over}일`:" · 전부 7시간 이내");
+}
+
+let cycScope="mg";
+function renderCyc(){
+  const st=S.settings, t=today();
+  const specs=[
+    {k:"mg", nm:"민공연", cur:S.progress.mgPage, end:st.mgEnd, start:st.mgStart, sp:st.mgSpeed, arr:PLAN.mg},
+    {k:"pt", nm:"특허 객관식", cur:S.progress.ptPage, end:st.ptEnd, start:st.ptStart, sp:st.ptSpeed, arr:PLAN.pt},
+    {k:"mgS", nm:"민공연 · 스터디", cur:S.progress.mgPageStudy, end:st.mgEnd, start:st.mgStart, sp:st.mgSpeed, arr:PLAN.mgS}
+  ];
+  document.getElementById("cycCards").innerHTML=specs.map(s=>{
+    const pct=Math.round(s.cur/s.end*100);
+    const c1=s.arr.filter(x=>x.cycle===1);
+    const per=c1.length?Math.round(c1.reduce((a,b)=>a+b.n,0)/c1.length):0;
+    return `<div class="card cycCard">
+      <div class="cycTop"><h3>${s.nm}</h3><span class="pg mono">${s.cur} / ${s.end}p · ${pct}%</span></div>
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      <div class="cycMeta"><span>하루 <b>${per}p</b></span><span>소요 <b>${fm(per/s.sp*60)}</b></span>
+      <span>회독1 완료 <b>${md(parse(st.cycle1End))}</b></span></div></div>`;
+  }).join("");
+  document.getElementById("cycTabs").innerHTML=specs.map(s=>
+    `<button data-c="${s.k}" aria-selected="${cycScope===s.k}">${s.nm}</button>`).join("");
+  const spec=specs.find(s=>s.k===cycScope);
+  let cum=spec.cur;
+  document.getElementById("cycBody").innerHTML=spec.arr.slice(0,60).map(x=>{
+    const cls=[]; if(iso(x.date)===iso(t)) cls.push("now"); else if(x.date<t) cls.push("past");
+    if(x.date.getDay()===1) cls.push("wkstart");
+    cum=x.b;
+    return `<tr class="${cls.join(" ")}">
+      <td class="d">${md(x.date)}<span class="wd">${WD[x.date.getDay()]}</span></td>
+      <td class="mono">${x.a} - ${x.b}p ${x.cycle>1?`<span class="pill">회독 ${x.cycle}</span>`:""}</td>
+      <td class="num">${x.n}p</td><td class="num">${fm(x.min)}</td>
+      <td class="num">${Math.round(x.b/spec.end*100)}%</td></tr>`;
+  }).join("");
+  document.getElementById("cycHint").textContent =
+    `회독 ${S.settings.cycleDays}학습일(6주) 주기. 회독1은 ${md(parse(st.cycle1End))}에 끝나고, 그 다음 날부터 처음 쪽으로 되돌아간다. 스터디원과는 회독1을 같은 날 끝내도록 쪽수만 다르게 나눴다.`;
+}
+
+const RULES=[
+  {t:"계획 원칙", items:[
+    "<b>주 5일(월-금) 공부 + 2일 휴식</b>이 모든 계획의 기준.",
+    "분할은 <b>강·회차 경계</b>에서만 끊는다. 한 논점을 두 날에 쪼개지 않는다.",
+    "페이지는 <b>책에 인쇄된 쪽번호</b> 기준.",
+    "인강은 <b>단계적 증량</b> — 실적이 따라올 때만 다음 단계로 올린다."]},
+  {t:"시간 계산", items:[
+    "<b>−5분 보정은 민사소송법 강의 한정.</b> 나머지는 표기 = 실제.",
+    "강의는 전부 <b>2배속</b> 기준.",
+    "예습(문제 선풀): 화학 기출·객관식 <b>20분/강</b>(실측) · 물리 기출 <b>30분/강</b>(가정) · 생물·지구 <b>10분/강</b> · 기본강의는 없음.",
+    "회독 속도: 민공연 <b>25p/h</b>(실측) · 특허 객관식 <b>30p/h</b>(미측정)."]},
+  {t:"아직 미측정", warn:true, items:[
+    "<b>특허 객관식 속도</b> — 30p/h는 가정치. 실제로 재서 고칠 것.",
+    "<b>물리 기출 예습</b> — 30분/강 가정. 10월 착수 시 측정.",
+    "미개강 강의(<b>*</b> 표시)는 같은 과목 실측 평균으로 추정한 값이다."]},
+  {t:"세션 분리", items:[
+    "<b>계획 세션</b> — 일정 재산출·진도 로그·알림 루틴.",
+    "<b>채점·퀴즈 세션</b> — 민소 객관식 출제·채점·판례 누적.",
+    "진도가 바뀌면 이 판을 먼저 고치고, 채점 세션에는 파일로 전달된다."]}
+];
+function renderRules(){
+  document.getElementById("rulesBox").innerHTML=RULES.map(r=>
+    `<div class="card rule${r.warn?" warn":""}"><h3><i class="dot"></i>${r.t}</h3><ul>${r.items.map(i=>`<li>${i}</li>`).join("")}</ul></div>`).join("");
+}
+
+const FIELDS=[
+  {k:"chemPast", l:"화학 기출풀이", u:"강"},
+  {k:"phyIntro", l:"물리 입문", u:"강"},
+  {k:"phyBase", l:"물리 기본", u:"강"},
+  {k:"phyPast1", l:"물리 기출 1단계", u:"강"},
+  {k:"phyPast2", l:"물리 기출 2단계", u:"강"},
+  {k:"chemMC", l:"화학 객관식", u:"강"},
+  {k:"mgPage", l:"민공연", u:"p까지"},
+  {k:"ptPage", l:"특허 객관식", u:"p까지"},
+  {k:"mgPageStudy", l:"민공연 (스터디원)", u:"p까지"}
+];
+const DATEFLD={k:"rampStart", l:"증량 시작일", hint:"실적이 안 따라오면 이 날짜를 뒤로 미루면 된다"};
+function renderInputs(){
+  document.getElementById("igrid").innerHTML=FIELDS.map(f=>{
+    const c=INV.find(x=>x.id===f.k);
+    const of=c?`전체 ${c.count}강`:(f.k==="ptPage"?"전체 630p":"전체 1025p");
+    return `<div class="fld"><label for="f_${f.k}">${f.l}</label>
+      <div class="row"><input type="number" id="f_${f.k}" min="0" value="${S.progress[f.k]}"><span class="unit">${f.u}</span></div>
+      <div class="of">${of}</div></div>`;
+  }).join("") +
+  `<div class="fld"><label for="f_rampStart">${DATEFLD.l}</label>
+    <div class="row"><input type="date" id="f_rampStart" value="${S.settings.rampStart}"></div>
+    <div class="of">${DATEFLD.hint}</div></div>`;
+}
+
+function renderAll(){
+  build(); renderToday(); renderSched(); renderCyc();
+  document.getElementById("schedTabs").innerHTML=
+    ['all','9','10','11','12'].map(s=>`<button data-s="${s}" aria-selected="${schedScope===s}">${s==='all'?'전체':s+'월'}</button>`).join("");
+  document.getElementById("footStamp").textContent="마지막 갱신 "+(S.updatedAt||iso(today()));
+}
+
+/* ---------------- 이벤트 ---------------- */
+document.addEventListener("click",e=>{
+  const st=e.target.closest("#schedTabs button");
+  if(st){ schedScope=st.dataset.s; renderSched();
+    document.querySelectorAll("#schedTabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.s===schedScope)); return; }
+  const ct=e.target.closest("#cycTabs button");
+  if(ct){ cycScope=ct.dataset.c; renderCyc(); return; }
+});
+document.addEventListener("change",e=>{
+  const c=e.target.closest(".chk");
+  if(c){
+    const key=iso(today()); S.checks[key]=S.checks[key]||{};
+    S.checks[key][c.dataset.k]=c.checked;
+    renderToday(); save(true); return;
+  }
+});
+document.getElementById("btnSave").addEventListener("click",()=>{
+  FIELDS.forEach(f=>{ const v=Number(document.getElementById("f_"+f.k).value); if(!isNaN(v)) S.progress[f.k]=v; });
+  const rs=document.getElementById("f_rampStart").value;
+  if(/^\d{4}-\d{2}-\d{2}$/.test(rs)) S.settings.rampStart=rs;
+  S.updatedAt=iso(today());
+  renderAll(); save();
+});
+document.getElementById("btnToday").addEventListener("click",()=>{
+  const key=iso(today()), ck=S.checks[key]||{};
+  const row=PLAN.rows.find(r=>iso(r.date)===iso(today()));
+  if(!row) return;
+  if(ck.sci) row.lec.forEach(l=>{ S.progress[l.courseId]=(S.progress[l.courseId]||0)+1; });
+  if(ck.mg && row.mg) S.progress.mgPage=row.mg.b;
+  if(ck.pt && row.pt) S.progress.ptPage=row.pt.b;
+  if(ck.mg && row.mgS) S.progress.mgPageStudy=row.mgS.b;
+  S.updatedAt=iso(today());
+  renderInputs(); renderAll(); save();
+});
+document.getElementById("btnReset").addEventListener("click",()=>{ renderInputs(); });
+
+/* ---------------- URL 해시 상태 ---------------- */
+function encodeState(){
+  try{ return btoa(JSON.stringify({p:S.progress, r:S.settings.rampStart})); }catch(e){ return ""; }
+}
+function readHash(){
+  const h=location.hash.replace(/^#/,""); if(!h) return null;
+  try{ const o=JSON.parse(atob(h)); return o&&o.p?o:null; }catch(e){ return null; }
+}
+function pushHash(){
+  const e=encodeState(); if(e) history.replaceState(null,"","#"+e);
+}
+
+/* ---------------- 저장 (db → localStorage 폴백) ---------------- */
+let saveTimer=null;
+function flash(msg,ok){ const el=document.getElementById("saveState"); el.textContent=msg; el.className="saveState"+(ok?" ok":""); }
+function save(quiet){
+  const payload={progress:S.progress, settings:S.settings, checks:S.checks, updatedAt:S.updatedAt||iso(today())};
+  try{ localStorage.setItem("plan-state",JSON.stringify(payload)); }catch(e){}
+  pushHash();
+  if(dbDoc){
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(()=>{ dbDoc.set(payload).then(()=>flash("모든 기기에 저장됨",true)).catch(()=>flash("이 기기에만 저장됨")); },250);
+  } else if(!quiet) flash("이 기기에만 저장됨");
+}
+function apply(p){
+  if(!p) return;
+  if(p.progress) Object.assign(S.progress,p.progress);
+  if(p.settings) Object.assign(S.settings,p.settings);
+  if(p.checks) S.checks=p.checks;
+  S.updatedAt=p.updatedAt;
+}
+try{ apply(JSON.parse(localStorage.getItem("plan-state"))); }catch(e){}
+const HASH=readHash();
+if(HASH){ Object.assign(S.progress,HASH.p); if(HASH.r) S.settings.rampStart=HASH.r; }
+renderInputs(); renderRules(); renderAll(); pushHash();
+
+document.getElementById("btnLink").addEventListener("click",async()=>{
+  pushHash();
+  try{ await navigator.clipboard.writeText(location.href); flash("링크 복사됨 — 다른 기기에서 열면 이 진도로 시작한다",true); }
+  catch(e){ flash("복사 실패 — 주소창의 URL을 그대로 옮기면 된다"); }
+});
+
+(async()=>{
+  const hint=document.getElementById("syncHint");
+  if(typeof claude==="undefined" || !claude || typeof claude.use!=="function"){
+    hint.textContent="진도는 이 브라우저에 저장된다. 다른 기기로 옮기려면 «이 진도로 링크 복사»를 눌러 그 주소를 열면 된다.";
+    return;
+  }
+  hint.textContent="이 기기에만 저장 중 — 동기화 연결 시도 중…";
+  try{
+    DB=await claude.use("db");
+    if(!DB){ hint.textContent="동기화를 쓸 수 없어 이 기기에만 저장한다. 다른 기기에서는 진도를 다시 입력해야 한다."; return; }
+    dbDoc=DB.doc("state/main");
+    const snap=await dbDoc.get();
+    if(snap && snap.data){ apply(snap.data); renderInputs(); renderAll(); }
+    else { await dbDoc.set({progress:S.progress,settings:S.settings,checks:S.checks,updatedAt:iso(today())}); }
+    dbDoc.onSnapshot(s=>{ if(s&&s.data){ apply(s.data); renderInputs(); renderAll(); } });
+    hint.textContent="폰·PC 어디서 고쳐도 같이 반영된다.";
+  }catch(e){
+    hint.textContent="동기화 연결 실패 — 이 기기에만 저장한다.";
+  }
+})();
+</script>
+
+</body>
+</html>
