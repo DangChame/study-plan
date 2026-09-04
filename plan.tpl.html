@@ -261,12 +261,14 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
   <div class="card inputs">
     <div class="igrid" id="igrid"></div>
     <div class="btns">
-      <button class="pri" id="btnSave">저장</button>
-      <button id="btnToday">오늘 진도 반영</button>
+      <button class="pri" id="btnToday">오늘 한 만큼 진도 올리기</button>
+      <button id="btnSave">직접 고친 값 저장</button>
       <button id="btnReset">되돌리기</button>
       <button id="btnLink">이 진도로 링크 복사</button>
       <span class="saveState" id="saveState"></span>
     </div>
+    <p class="hint">위 «오늘» 칸에서 끝낸 항목을 체크한 뒤 <b>오늘 한 만큼 진도 올리기</b>를 누르면 숫자가 알아서 올라간다.
+    계획과 다르게 나갔을 때만(강의를 덜 들었거나 페이지를 더 봤을 때) 숫자를 직접 고치고 <b>직접 고친 값 저장</b>을 누른다.</p>
     <p class="hint" id="syncHint"></p>
   </div>
 </section>
@@ -641,13 +643,14 @@ const FIELDS=[
   {k:"chemMC", l:"화학 객관식", u:"강"},
   {k:"mgPage", l:"민공연", u:"p까지"},
   {k:"ptPage", l:"특허 객관식", u:"p까지"},
-  {k:"mgPageStudy", l:"민공연 (스터디원)", u:"p까지"}
+  {k:"mgPageStudy", l:"민공연 (스터디원)", u:"p까지", manual:true}
 ];
 const DATEFLD={k:"rampStart", l:"증량 시작일", hint:"실적이 안 따라오면 이 날짜를 뒤로 미루면 된다"};
 function renderInputs(){
   document.getElementById("igrid").innerHTML=FIELDS.map(f=>{
     const c=INV.find(x=>x.id===f.k);
-    const of=c?`전체 ${c.count}강`:(f.k==="ptPage"?"전체 630p":"전체 1025p");
+    let of=c?`전체 ${c.count}강`:(f.k==="ptPage"?"전체 630p":"전체 1025p");
+    if(f.manual) of+=" · 손으로만";
     return `<div class="fld"><label for="f_${f.k}">${f.l}</label>
       <div class="row"><input type="number" id="f_${f.k}" min="0" value="${S.progress[f.k]}"><span class="unit">${f.u}</span></div>
       <div class="of">${of}</div></div>`;
@@ -694,7 +697,7 @@ document.getElementById("btnToday").addEventListener("click",()=>{
   if(ck.sci) row.lec.forEach(l=>{ S.progress[l.courseId]=(S.progress[l.courseId]||0)+1; });
   if(ck.mg && row.mg) S.progress.mgPage=row.mg.b;
   if(ck.pt && row.pt) S.progress.ptPage=row.pt.b;
-  if(ck.mg && row.mgS) S.progress.mgPageStudy=row.mgS.b;
+  // 스터디원 진도는 남의 것이라 자동으로 올리지 않는다 — 손으로 입력.
   S.updatedAt=iso(today());
   renderInputs(); renderAll(); save();
 });
