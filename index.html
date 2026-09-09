@@ -363,7 +363,7 @@ const DEFAULTS = {
     mgStart:3, mgEnd:275, ptStart:2, ptEnd:362,
     mgName:"민법연습장", ptName:"특허연습장",
     cycle1End:"2026-10-09", cycleDays:30,
-    minsoMin:15, writeMin:20,
+    minsoMin:15, writeMin:10,
     holidays:[], useHolidays:false
   },
   checks:{}
@@ -543,7 +543,7 @@ function renderToday(){
       row.mg&&{id:"mg", lbl:S.settings.mgName, val:row.mg.a+" - "+row.mg.b+"p", sub:row.mg.n+"p · "+S.settings.mgSpeed+"p/h (환산)", min:row.mg.min},
       row.pt&&{id:"pt", lbl:S.settings.ptName, val:row.pt.a+" - "+row.pt.b+"p", sub:row.pt.n+"p · "+S.settings.ptSpeed+"p/h (미측정)", min:row.pt.min},
       {id:"ms", lbl:"민소 객관식", val:"9-10문항", sub:"채점 세션에서 출제", min:S.settings.minsoMin},
-      {id:"wr", lbl:"글씨 교정", val:"법률용어 + 속도 예문", sub:"매주 금요일 주간점검", min:S.settings.writeMin}
+      {id:"wr", lbl:"글씨 교정", val:"법률용어 + 속도 예문", sub:"주 5일 · 10분", min:S.settings.writeMin}
     ].filter(Boolean);
     ul.innerHTML=items.map(x=>{
       const ck=S.checks[key][x.id]?" checked":"";
