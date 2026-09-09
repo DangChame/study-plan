@@ -96,6 +96,7 @@ section{padding:40px 0 4px}
 .tdate .wd{color:var(--muted); font-size:14px; font-weight:500}
 .tag{font-size:11px; font-weight:600; padding:3px 8px; border-radius:5px; background:var(--accentSoft); color:var(--accent)}
 .tag.rest{background:var(--warnSoft); color:var(--warn)}
+.tag.full{background:var(--goodSoft); color:var(--good)}
 ul.tasks{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:1px}
 ul.tasks li{display:flex; align-items:flex-start; gap:12px; padding:11px 4px; border-top:1px solid var(--line2)}
 ul.tasks li:first-child{border-top:0}
@@ -295,7 +296,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
     <table>
       <thead><tr>
         <th>날짜</th><th>자연과학 강의</th><th class="num">강</th><th class="num">강의+예습</th>
-        <th>민법연습장</th><th>특허연습장</th><th class="num">하루 총합</th>
+        <th>민법연습장</th><th>특허연습장</th><th class="num">가용</th><th class="num">하루 총합</th>
       </tr></thead>
       <tbody id="schedBody"></tbody>
     </table>
@@ -303,7 +304,8 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
   <div class="legend">
     <span><i class="sw" style="background:var(--accentSoft)"></i>오늘</span>
     <span><i class="sw" style="background:var(--line2)"></i>지난 날</span>
-    <span><i class="sw" style="background:var(--warnSoft)"></i>7시간 초과</span>
+    <span><i class="sw" style="background:var(--goodSoft)"></i>전업 공부일</span>
+    <span><i class="sw" style="background:var(--warnSoft)"></i>가벼운 날</span>
     <span>* = 미개강 추정치</span>
   </div>
 </section>
@@ -354,8 +356,10 @@ const DEFAULTS = {
              mgPage:44, ptPage:45 },
   settings:{
     rampStart:"2026-09-09",
-    ramp:[80,100,130,160,185],     // 주차별 자연과학 목표(분), 이후 마지막 값 유지
-    mgSpeed:6.7, ptSpeed:17.2,     // p/h — 옛 교재에서 압축비로 환산 (해설만 뺀 판이라 총 시간은 보존)
+    capRamp:[260,275,300,330,350], // 주차별 하루 총 순공 목표(분). 이후 마지막 값 유지
+    dayCap:{ "2026-09-09":180, "2026-09-11":420, "2026-09-12":420, "2026-09-13":420 },
+    offDays:["2026-10-22","2026-10-24","2026-10-25","2026-10-26","2026-10-27"],
+    mgSpeed:6, ptSpeed:15,         // p/h — 보수적으로 잡은 값 (2026-09-09 사용자 지정)
     mgStart:3, mgEnd:275, ptStart:2, ptEnd:362,
     mgName:"민법연습장", ptName:"특허연습장",
     cycle1End:"2026-10-09", cycleDays:30,
@@ -383,11 +387,7 @@ const parse = s => { const [y,m,d]=s.split("-").map(Number); return new Date(y,m
 const addD = (d,n)=>{ const x=new Date(d); x.setDate(x.getDate()+n); return x; };
 const md = d => (d.getMonth()+1)+"/"+d.getDate();
 function today(){ const n=new Date(); return new Date(n.getFullYear(),n.getMonth(),n.getDate()); }
-function isStudyDay(d){
-  if(d.getDay()===0||d.getDay()===6) return false;
-  if(S.settings.useHolidays && S.settings.holidays.includes(iso(d))) return false;
-  return true;
-}
+function isStudyDay(d){ return capacity(d)>0; }
 function studyDays(from,count){
   const out=[]; let c=new Date(from);
   while(out.length<count){ if(isStudyDay(c)) out.push(new Date(c)); c=addD(c,1); }
@@ -418,38 +418,40 @@ function lectureQueue(){
   return q;
 }
 function mondayOf(d){ const x=new Date(d); const k=(x.getDay()+6)%7; return addD(x,-k); }
-function rampTarget(d){
-  const start=parse(S.settings.rampStart);
-  if(d<start) return S.settings.ramp[0];
-  const weeks=Math.round((mondayOf(d)-mondayOf(start))/6048e5);
-  return S.settings.ramp[Math.min(Math.max(weeks,0),S.settings.ramp.length-1)];
+// 그날 쓸 수 있는 총 순공 시간(분). 0이면 공부 안 하는 날.
+function capacity(d){
+  const st=S.settings, k=iso(d);
+  if(st.offDays.includes(k)) return 0;
+  if(st.dayCap[k]!==undefined) return st.dayCap[k];
+  if(d.getDay()===0||d.getDay()===6) return 0;          // 기본은 주 5일
+  const start=parse(st.rampStart);
+  const w=Math.round((mondayOf(d)-mondayOf(start))/6048e5);
+  return st.capRamp[Math.min(Math.max(w,0),st.capRamp.length-1)];
 }
 
 /* ---------------- 회독 배분 ---------------- */
+function alloc(days, total, startPage, speed, cycle){
+  // 가용시간에 비례해 쪽수를 나눈다 (긴 날이 더 많이 가져간다)
+  const w=days.map(capacity), sum=w.reduce((a,b)=>a+b,0);
+  const out=[]; let p=startPage, given=0;
+  days.forEach((d,i)=>{
+    const isLast=i===days.length-1;
+    let c=isLast ? total-given : Math.round(total*w[i]/sum);
+    if(c<0) c=0;
+    given+=c;
+    out.push({date:d, a:p, b:p+c-1, n:c, min:c/speed*60, cycle});
+    p+=c;
+  });
+  return out.filter(x=>x.n>0);
+}
 function cycleSlices(startDate, curPage, endDate, startPage, endPage, speed){
-  // 회독1: 오늘부터 endDate까지 남은 페이지 분배
-  const days=studyDaysUntil(startDate,endDate);
   const out=[];
-  if(days.length && curPage<endPage){
-    const from=Math.max(curPage+1,startPage), total=Math.max(0,endPage-from+1);
-    const base=Math.floor(total/days.length), ex=total%days.length; let p=from;
-    days.forEach((d,i)=>{
-      const c=base+(i<ex?1:0);
-      out.push({date:d, a:p, b:p+c-1, n:c, min:c/speed*60, cycle:1});
-      p+=c;
-    });
-  }
-  // 회독2 이후
+  const d1=studyDaysUntil(startDate,endDate);
+  if(d1.length && curPage<endPage) out.push(...alloc(d1, endPage-curPage, curPage+1, speed, 1));
   let cur=addD(endDate,1), cyc=2;
   while(cyc<=5){
     const ds=studyDays(cur,S.settings.cycleDays);
-    const total=endPage-startPage+1, base=Math.floor(total/ds.length), ex=total%ds.length;
-    let p=startPage;
-    ds.forEach((d,i)=>{
-      const c=base+(i<ex?1:0);
-      out.push({date:d, a:p, b:p+c-1, n:c, min:c/speed*60, cycle:cyc});
-      p+=c;
-    });
+    out.push(...alloc(ds, endPage-startPage+1, startPage, speed, cyc));
     cur=addD(ds[ds.length-1],1); cyc++;
   }
   return out;
@@ -458,29 +460,31 @@ function cycleSlices(startDate, curPage, endDate, startPage, endPage, speed){
 /* ---------------- 일정 산출 ---------------- */
 let PLAN=null;
 function build(){
-  const t=today();
-  const start = t < parse(S.settings.rampStart) ? parse(S.settings.rampStart) : t;
+  const t=today(), st=S.settings;
+  const start = t < parse(st.rampStart) ? parse(st.rampStart) : t;
   const q=lectureQueue();
-  const days=studyDays(start,150);
-  const st=S.settings;
+  const days=studyDays(start,170);
   const mg=cycleSlices(start,S.progress.mgPage,parse(st.cycle1End),st.mgStart,st.mgEnd,st.mgSpeed);
   const pt=cycleSlices(start,S.progress.ptPage,parse(st.cycle1End),st.ptStart,st.ptEnd,st.ptSpeed);
-  const byDate=(arr)=>{ const m={}; arr.forEach(x=>m[iso(x.date)]=x); return m; };
+  const byDate=a=>{ const m={}; a.forEach(x=>m[iso(x.date)]=x); return m; };
   const MG=byDate(mg), PT=byDate(pt);
 
   let i=0; const rows=[];
   for(const d of days){
-    if(i>=q.length && rows.length>0 && !MG[iso(d)]) break;
-    const T=rampTarget(d); let acc=0; const got=[];
-    while(i<q.length){
-      const c=q[i].cost;
-      if(got.length && acc+c > T*1.18) break;
-      got.push(q[i]); acc+=c; i++;
-      if(acc >= T*0.88) break;
-    }
     const m=MG[iso(d)], p=PT[iso(d)];
-    const total=acc + (m?m.min:0) + (p?p.min:0) + st.minsoMin + st.writeMin;
-    rows.push({date:d, lec:got, lecMin:acc, mg:m, pt:p, total, target:T});
+    if(i>=q.length && !m && !p) break;
+    const cap=capacity(d);
+    const fixed=st.minsoMin+st.writeMin;
+    const budget=Math.max(0, cap - (m?m.min:0) - (p?p.min:0) - fixed);
+    let acc=0; const got=[];
+    while(i<q.length && budget>0){
+      const c=q[i].cost;
+      if(got.length && acc+c > budget*1.12) break;
+      got.push(q[i]); acc+=c; i++;
+      if(acc >= budget*0.9) break;
+    }
+    rows.push({date:d, cap, lec:got, lecMin:acc, mg:m, pt:p,
+               total:acc+(m?m.min:0)+(p?p.min:0)+fixed});
   }
   PLAN={rows, queue:q, mg, pt};
   return PLAN;
@@ -525,13 +529,15 @@ function renderToday(){
 
   if(!row){
     tag.textContent="휴식일"; tag.className="tag rest";
-    ul.innerHTML='<li><div class="tk"><div class="val">오늘은 계획된 학습일이 아니다.</div><div class="sub">주 5일(월-금) 공부 + 2일 휴식이 원칙.</div></div></li>';
+    const off=S.settings.offDays.includes(iso(t));
+    ul.innerHTML='<li><div class="tk"><div class="val">'+(off?"공부 못 하는 날로 지정돼 있다.":"오늘은 계획된 학습일이 아니다.")+
+      '</div><div class="sub">'+(off?"이 날의 몫은 앞뒤 학습일에 이미 나눠 실려 있다.":"주 5일(월-금) 공부 + 2일 휴식이 원칙.")+'</div></div></li>';
     document.getElementById("tTotal").textContent="—";
     document.getElementById("tTotalSub").textContent="쉬는 날";
   }else{
-    const over=row.total>420;
-    tag.textContent = over ? "7시간 초과" : "학습일";
-    tag.className = over ? "tag rest" : "tag";
+    const full=row.cap>=400, light=row.cap<=200;
+    tag.textContent = full ? "전업 공부일" : light ? "가벼운 날 · "+fm(row.cap) : "학습일";
+    tag.className = full ? "tag full" : light ? "tag rest" : "tag";
     const items=[
       {id:"sci", lbl:"자연과학", val:lecLabel(row.lec), sub:row.lec.length+"강 · 예습 "+fm(row.lec.reduce((a,b)=>a+b.prep,0))+" + 강의 "+fm(row.lec.reduce((a,b)=>a+b.min,0)), min:row.lecMin},
       row.mg&&{id:"mg", lbl:S.settings.mgName, val:row.mg.a+" - "+row.mg.b+"p", sub:row.mg.n+"p · "+S.settings.mgSpeed+"p/h (환산)", min:row.mg.min},
@@ -568,7 +574,8 @@ function renderSched(){
   body.innerHTML=rows.map(r=>{
     const cls=[]; if(iso(r.date)===iso(t)) cls.push("now"); else if(r.date<t) cls.push("past");
     if(r.date.getDay()===1) cls.push("wkstart");
-    const tot=r.total>420?`<span class="pill w">${fm(r.total)}</span>`:fm(r.total);
+    const tot=r.cap>=400?`<span class="pill g">${fm(r.total)}</span>`
+             :r.cap<=200?`<span class="pill w">${fm(r.total)}</span>`:fm(r.total);
     return `<tr class="${cls.join(" ")}">
       <td class="d">${md(r.date)}<span class="wd">${WD[r.date.getDay()]}</span></td>
       <td>${lecLabel(r.lec)}</td>
@@ -576,6 +583,7 @@ function renderSched(){
       <td class="num">${r.lecMin?fm(r.lecMin):"—"}</td>
       <td class="num">${r.mg?r.mg.a+"-"+r.mg.b+"p":"—"}</td>
       <td class="num">${r.pt?r.pt.a+"-"+r.pt.b+"p":"—"}</td>
+      <td class="num">${fm(r.cap)}</td>
       <td class="num">${tot}</td></tr>`;
   }).join("");
   const over=rows.filter(r=>r.total>420).length;
@@ -635,10 +643,14 @@ const RULES=[
     "<b>−5분 보정은 민사소송법 강의 한정.</b> 나머지는 표기 = 실제.",
     "강의는 전부 <b>2배속</b> 기준.",
     "예습(문제 선풀): 화학 기출·객관식 <b>20분/강</b>(실측) · 물리 기출 <b>30분/강</b>(가정) · 생물·지구 <b>10분/강</b> · 기본강의는 없음.",
-    "회독 속도: 민법연습장 <b>6.7p/h</b> · 특허연습장 <b>17.2p/h</b>.",
-    "연습장은 옛 교재에서 <b>해설만 뺀 판</b>이라 총 소요 시간이 보존된다 → 압축비로 환산했다. 민법 1024p÷273p = 3.75배, 특허 630p÷361p = 1.75배."]},
+    "회독 속도: 민법연습장 <b>6p/h</b> · 특허연습장 <b>15p/h</b> — 환산값(6.7 · 17.2)에서 <b>보수적으로 내려 잡았다</b>.",
+    "회독 분량은 <b>그날 가용시간에 비례</b>해 나눈다. 전업일은 더 많이, 가벼운 날은 더 적게 가져간다."]},
+  {t:"특이 일정", warn:true, items:[
+    "<b>9/9(수)</b> 3시간만 · <b>9/11(금)-9/13(일)</b> 전업(7시간)",
+    "<b>10/22(목) · 10/26(월) · 10/27(화)</b> 공부 못 함 (10/24-25는 원래 주말)",
+    "공휴일은 무시한다 — 추석·한글날에도 주 5일 그대로 간다."]},
   {t:"아직 미측정", warn:true, items:[
-    "<b>특허연습장 속도</b> — 옛 교재의 30p/h가 애초에 미측정이라 환산값 17.2p/h도 미측정이다. 민법 쪽 6.7p/h는 25p/h 실측에서 나온 값이라 근거가 있다.",
+    "<b>특허연습장 속도</b> — 옛 교재의 30p/h가 애초에 미측정이다. 지금 쓰는 15p/h는 거기서 환산한 뒤 더 낮춰 잡은 값이다.",
     "<b>물리 기출 예습</b> — 30분/강 가정. 10월 착수 시 측정.",
     "미개강 강의(<b>*</b> 표시)는 같은 과목 실측 평균으로 추정한 값이다."]},
   {t:"세션 분리", items:[
