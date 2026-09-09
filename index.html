@@ -312,7 +312,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
   <div class="shead">
     <span class="eyebrow">03</span>
     <h2>회독</h2>
-    <p>민법연습장 · 특허연습장 — 해설 없이 문제만 있는 판. 학습일 30일(6주) 1회독</p>
+    <p>민법연습장 3-275p · 특허연습장 2-362p — 학습일 30일(6주) 1회독</p>
   </div>
   <div class="cyc" id="cycCards"></div>
   <div class="tabs" id="cycTabs"></div>
@@ -351,11 +351,11 @@ const INV = [{"id":"chemPast","name":"화학 기출풀이","short":"화학기출
 const DEFAULTS = {
   progress:{ chemPast:2, phyIntro:4, phyBase:0, phyPast1:0, phyPast2:0, chemMC:0, chemFin:0,
              bioBase:0, bioPast:0, bioMC:0, bioFin:0, earthBase:0, earthMC:0,
-             mgPage:44, ptPage:45, mgPageStudy:0 },
+             mgPage:44, ptPage:45 },
   settings:{
     rampStart:"2026-09-09",
     ramp:[80,100,130,160,185],     // 주차별 자연과학 목표(분), 이후 마지막 값 유지
-    mgSpeed:8, ptSpeed:17,         // p/h — 둘 다 미측정 가정치
+    mgSpeed:6.7, ptSpeed:17.2,     // p/h — 옛 교재에서 압축비로 환산 (해설만 뺀 판이라 총 시간은 보존)
     mgStart:3, mgEnd:275, ptStart:2, ptEnd:362,
     mgName:"민법연습장", ptName:"특허연습장",
     cycle1End:"2026-10-09", cycleDays:30,
@@ -465,9 +465,8 @@ function build(){
   const st=S.settings;
   const mg=cycleSlices(start,S.progress.mgPage,parse(st.cycle1End),st.mgStart,st.mgEnd,st.mgSpeed);
   const pt=cycleSlices(start,S.progress.ptPage,parse(st.cycle1End),st.ptStart,st.ptEnd,st.ptSpeed);
-  const mgS=cycleSlices(start,S.progress.mgPageStudy,parse(st.cycle1End),st.mgStart,st.mgEnd,st.mgSpeed);
   const byDate=(arr)=>{ const m={}; arr.forEach(x=>m[iso(x.date)]=x); return m; };
-  const MG=byDate(mg), PT=byDate(pt), MGS=byDate(mgS);
+  const MG=byDate(mg), PT=byDate(pt);
 
   let i=0; const rows=[];
   for(const d of days){
@@ -479,11 +478,11 @@ function build(){
       got.push(q[i]); acc+=c; i++;
       if(acc >= T*0.88) break;
     }
-    const m=MG[iso(d)], p=PT[iso(d)], ms=MGS[iso(d)];
+    const m=MG[iso(d)], p=PT[iso(d)];
     const total=acc + (m?m.min:0) + (p?p.min:0) + st.minsoMin + st.writeMin;
-    rows.push({date:d, lec:got, lecMin:acc, mg:m, pt:p, mgS:ms, total, target:T});
+    rows.push({date:d, lec:got, lecMin:acc, mg:m, pt:p, total, target:T});
   }
-  PLAN={rows, queue:q, mg, pt, mgS};
+  PLAN={rows, queue:q, mg, pt};
   return PLAN;
 }
 
@@ -535,7 +534,7 @@ function renderToday(){
     tag.className = over ? "tag rest" : "tag";
     const items=[
       {id:"sci", lbl:"자연과학", val:lecLabel(row.lec), sub:row.lec.length+"강 · 예습 "+fm(row.lec.reduce((a,b)=>a+b.prep,0))+" + 강의 "+fm(row.lec.reduce((a,b)=>a+b.min,0)), min:row.lecMin},
-      row.mg&&{id:"mg", lbl:S.settings.mgName, val:row.mg.a+" - "+row.mg.b+"p", sub:row.mg.n+"p · "+S.settings.mgSpeed+"p/h (미측정)", min:row.mg.min},
+      row.mg&&{id:"mg", lbl:S.settings.mgName, val:row.mg.a+" - "+row.mg.b+"p", sub:row.mg.n+"p · "+S.settings.mgSpeed+"p/h (환산)", min:row.mg.min},
       row.pt&&{id:"pt", lbl:S.settings.ptName, val:row.pt.a+" - "+row.pt.b+"p", sub:row.pt.n+"p · "+S.settings.ptSpeed+"p/h (미측정)", min:row.pt.min},
       {id:"ms", lbl:"민소 객관식", val:"9-10문항", sub:"채점 세션에서 출제", min:S.settings.minsoMin},
       {id:"wr", lbl:"글씨 교정", val:"법률용어 + 속도 예문", sub:"매주 금요일 주간점검", min:S.settings.writeMin}
@@ -590,8 +589,7 @@ function renderCyc(){
   const st=S.settings, t=today();
   const specs=[
     {k:"mg", nm:st.mgName, cur:S.progress.mgPage, end:st.mgEnd, start:st.mgStart, sp:st.mgSpeed, arr:PLAN.mg},
-    {k:"pt", nm:st.ptName, cur:S.progress.ptPage, end:st.ptEnd, start:st.ptStart, sp:st.ptSpeed, arr:PLAN.pt},
-    {k:"mgS", nm:st.mgName+" · 스터디", cur:S.progress.mgPageStudy, end:st.mgEnd, start:st.mgStart, sp:st.mgSpeed, arr:PLAN.mgS}
+    {k:"pt", nm:st.ptName, cur:S.progress.ptPage, end:st.ptEnd, start:st.ptStart, sp:st.ptSpeed, arr:PLAN.pt}
   ];
   document.getElementById("cycCards").innerHTML=specs.map(s=>{
     const pct=Math.round(s.cur/s.end*100);
@@ -618,7 +616,7 @@ function renderCyc(){
       <td class="num">${Math.round(x.b/spec.end*100)}%</td></tr>`;
   }).join("");
   document.getElementById("cycHint").textContent =
-    `회독 ${S.settings.cycleDays}학습일(6주) 주기. 회독1은 ${md(parse(st.cycle1End))}에 끝나고, 그 다음 날부터 처음 쪽으로 되돌아간다. 두 책 모두 해설이 빠진 문제만 있는 판이라 페이지당 문제 수가 많다 — 속도는 아직 실측 전이다.`;
+    `회독 ${S.settings.cycleDays}학습일(6주) 주기. 회독1은 ${md(parse(st.cycle1End))}에 끝나고, 그 다음 날부터 처음 쪽으로 되돌아간다. 해설이 빠진 판이라 페이지당 문제가 훨씬 많다 — 쪽수는 적어도 걸리는 시간은 옛 교재와 같다.`;
 }
 
 const RULES=[
@@ -626,7 +624,8 @@ const RULES=[
     "민법 = <b>민법연습장</b> (구 민공연 오엑스워크북) · <b>3p-275p</b>",
     "특허 = <b>특허연습장</b> (구 해례객 연습장) · <b>2p-362p</b>",
     "둘 다 <b>해설 없이 문제만</b> 있는 판. 2026-09-09부터 이 쪽번호로 진도를 잡는다.",
-    "구 교재(민공연 1024p · 특허 객관식 630p)는 9/8까지 각각 151p · 71p에서 멈췄다."]},
+    "구 교재(민공연 1024p · 특허 객관식 630p)는 9/8까지 각각 151p · 71p에서 멈췄다.",
+    "연습장 = 구 교재에서 <b>해설만 뺀 판</b>. 문제 순서·범위가 그대로라 쪽수만 비례 압축된 셈이다."]},
   {t:"계획 원칙", items:[
     "<b>주 5일(월-금) 공부 + 2일 휴식</b>이 모든 계획의 기준.",
     "분할은 <b>강·회차 경계</b>에서만 끊는다. 한 논점을 두 날에 쪼개지 않는다.",
@@ -636,9 +635,10 @@ const RULES=[
     "<b>−5분 보정은 민사소송법 강의 한정.</b> 나머지는 표기 = 실제.",
     "강의는 전부 <b>2배속</b> 기준.",
     "예습(문제 선풀): 화학 기출·객관식 <b>20분/강</b>(실측) · 물리 기출 <b>30분/강</b>(가정) · 생물·지구 <b>10분/강</b> · 기본강의는 없음.",
-    "회독 속도: 민법연습장 <b>8p/h</b> · 특허연습장 <b>17p/h</b> — <b>둘 다 미측정 가정치</b>."]},
+    "회독 속도: 민법연습장 <b>6.7p/h</b> · 특허연습장 <b>17.2p/h</b>.",
+    "연습장은 옛 교재에서 <b>해설만 뺀 판</b>이라 총 소요 시간이 보존된다 → 압축비로 환산했다. 민법 1024p÷273p = 3.75배, 특허 630p÷361p = 1.75배."]},
   {t:"아직 미측정", warn:true, items:[
-    "<b>민법연습장 · 특허연습장 속도</b> — 8p/h · 17p/h는 옛 교재의 압축비에서 뽑은 가정치다. 실제로 재서 고칠 것.",
+    "<b>특허연습장 속도</b> — 옛 교재의 30p/h가 애초에 미측정이라 환산값 17.2p/h도 미측정이다. 민법 쪽 6.7p/h는 25p/h 실측에서 나온 값이라 근거가 있다.",
     "<b>물리 기출 예습</b> — 30분/강 가정. 10월 착수 시 측정.",
     "미개강 강의(<b>*</b> 표시)는 같은 과목 실측 평균으로 추정한 값이다."]},
   {t:"세션 분리", items:[
@@ -659,16 +659,14 @@ const FIELDS=[
   {k:"phyPast2", l:"물리 기출 2단계", u:"강"},
   {k:"chemMC", l:"화학 객관식", u:"강"},
   {k:"mgPage", l:"민법연습장", u:"p까지"},
-  {k:"ptPage", l:"특허연습장", u:"p까지"},
-  {k:"mgPageStudy", l:"민법연습장 (스터디원)", u:"p까지", manual:true}
+  {k:"ptPage", l:"특허연습장", u:"p까지"}
 ];
 const DATEFLD={k:"rampStart", l:"증량 시작일", hint:"실적이 안 따라오면 이 날짜를 뒤로 미루면 된다"};
 function renderInputs(){
   document.getElementById("igrid").innerHTML=FIELDS.map(f=>{
     const c=INV.find(x=>x.id===f.k);
     const st=S.settings;
-    let of=c?`전체 ${c.count}강`:(f.k==="ptPage"?`${st.ptStart}-${st.ptEnd}p`:`${st.mgStart}-${st.mgEnd}p`);
-    if(f.manual) of+=" · 손으로만";
+    const of=c?`전체 ${c.count}강`:(f.k==="ptPage"?`${st.ptStart}-${st.ptEnd}p`:`${st.mgStart}-${st.mgEnd}p`);
     return `<div class="fld"><label for="f_${f.k}">${f.l}</label>
       <div class="row"><input type="number" id="f_${f.k}" min="0" value="${S.progress[f.k]}"><span class="unit">${f.u}</span></div>
       <div class="of">${of}</div></div>`;
@@ -715,7 +713,6 @@ document.getElementById("btnToday").addEventListener("click",()=>{
   if(ck.sci) row.lec.forEach(l=>{ S.progress[l.courseId]=(S.progress[l.courseId]||0)+1; });
   if(ck.mg && row.mg) S.progress.mgPage=row.mg.b;
   if(ck.pt && row.pt) S.progress.ptPage=row.pt.b;
-  // 스터디원 진도는 남의 것이라 자동으로 올리지 않는다 — 손으로 입력.
   S.updatedAt=iso(today());
   renderInputs(); renderAll(); save();
 });
