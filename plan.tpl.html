@@ -183,6 +183,7 @@ tr.now td.d{color:var(--accent)}
 .cycCard{padding:16px 18px}
 .cycTop{display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:3px}
 .cycTop h3{font-size:14.5px; font-weight:700}
+.cycTop .rng{font-size:11px; font-weight:500; color:var(--faint); margin-left:5px}
 .cycTop .pg{font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600; color:var(--good)}
 .bar{height:7px; border-radius:4px; background:var(--line2); overflow:hidden; margin:9px 0 8px}
 .bar i{display:block; height:100%; border-radius:4px; background:var(--good)}
@@ -339,6 +340,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
 const INV = /*INVENTORY*/;
 
 /* ---------------- 기본 설정 ---------------- */
+const SETTINGS_VERSION = 5;   // 교재·속도·기간이 바뀌면 올린다
 const DEFAULTS = {
   progress:{ chemPast:2, phyIntro:4, phyBase:0, phyPast1:0, phyPast2:0, chemMC:0, chemFin:0,
              bioBase:0, bioPast:0, bioMC:0, bioFin:0, earthBase:0, earthMC:0,
@@ -592,7 +594,7 @@ function renderCyc(){
     const c1=s.arr.filter(x=>x.cycle===1);
     const per=c1.length?Math.round(c1.reduce((a,b)=>a+b.n,0)/c1.length):0;
     return `<div class="card cycCard">
-      <div class="cycTop"><h3>${s.nm}</h3><span class="pg mono">${s.cur} / ${s.end}p · ${pct}%</span></div>
+      <div class="cycTop"><h3>${s.nm} <span class="rng mono">${s.start}-${s.end}p</span></h3><span class="pg mono">${s.cur}p · ${pct}%</span></div>
       <div class="bar"><i style="width:${pct}%"></i></div>
       <div class="cycMeta"><span>하루 <b>${per}p</b></span><span>소요 <b>${fm(per/s.sp*60)}</b></span>
       <span>회독1 완료 <b>${md(parse(st.cycle1End))}</b></span></div></div>`;
@@ -737,7 +739,7 @@ function pushHash(){
 let saveTimer=null;
 function flash(msg,ok){ const el=document.getElementById("saveState"); el.textContent=msg; el.className="saveState"+(ok?" ok":""); }
 function save(quiet){
-  const payload={progress:S.progress, settings:S.settings, checks:S.checks, updatedAt:S.updatedAt||iso(today())};
+  const payload={v:SETTINGS_VERSION, progress:S.progress, settings:S.settings, checks:S.checks, updatedAt:S.updatedAt||iso(today())};
   try{ localStorage.setItem("plan-state",JSON.stringify(payload)); }catch(e){}
   pushHash();
   if(dbDoc){
@@ -745,16 +747,27 @@ function save(quiet){
     saveTimer=setTimeout(()=>{ dbDoc.set(payload).then(()=>flash("모든 기기에 저장됨",true)).catch(()=>flash("이 기기에만 저장됨")); },250);
   } else if(!quiet) flash("이 기기에만 저장됨");
 }
+// 저장본에서 되살릴 설정은 사용자가 화면에서 고칠 수 있는 것뿐이다.
+// 교재 쪽수·속도·회독 기간은 항상 코드의 최신값을 쓴다 — 옛 저장본이 덮어써 표기가 깨지는 것을 막는다.
+const USER_SETTINGS = ["rampStart"];
 function apply(p){
   if(!p) return;
   if(p.progress) Object.assign(S.progress,p.progress);
-  if(p.settings) Object.assign(S.settings,p.settings);
+  if(p.settings && p.v === SETTINGS_VERSION){
+    for(const k of USER_SETTINGS) if(p.settings[k]!==undefined) S.settings[k]=p.settings[k];
+  }
   if(p.checks) S.checks=p.checks;
   S.updatedAt=p.updatedAt;
 }
 try{ apply(JSON.parse(localStorage.getItem("plan-state"))); }catch(e){}
 const HASH=readHash();
 if(HASH){ Object.assign(S.progress,HASH.p); if(HASH.r) S.settings.rampStart=HASH.r; }
+// 구 교재 기준으로 저장된 페이지 값이 남아 있으면 되돌린다
+(function clampPages(){
+  const st=S.settings;
+  if(S.progress.mgPage>st.mgEnd || S.progress.mgPage<0) S.progress.mgPage=DEFAULTS.progress.mgPage;
+  if(S.progress.ptPage>st.ptEnd || S.progress.ptPage<0) S.progress.ptPage=DEFAULTS.progress.ptPage;
+})();
 renderInputs(); renderRules(); renderAll(); pushHash();
 
 document.getElementById("btnLink").addEventListener("click",async()=>{
@@ -776,7 +789,7 @@ document.getElementById("btnLink").addEventListener("click",async()=>{
     dbDoc=DB.doc("state/main");
     const snap=await dbDoc.get();
     if(snap && snap.data){ apply(snap.data); renderInputs(); renderAll(); }
-    else { await dbDoc.set({progress:S.progress,settings:S.settings,checks:S.checks,updatedAt:iso(today())}); }
+    else { await dbDoc.set({v:SETTINGS_VERSION,progress:S.progress,settings:S.settings,checks:S.checks,updatedAt:iso(today())}); }
     dbDoc.onSnapshot(s=>{ if(s&&s.data){ apply(s.data); renderInputs(); renderAll(); } });
     hint.textContent="폰·PC 어디서 고쳐도 같이 반영된다.";
   }catch(e){
