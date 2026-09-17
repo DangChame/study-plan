@@ -254,7 +254,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
       <div class="card stat">
         <div class="k">오늘 순공</div>
         <div class="v mono" id="tTotal">—</div>
-        <div class="s" id="tTotalSub">강의 + 회독 + 민소 + 판례 필사</div>
+        <div class="s" id="tTotalSub">강의 + 회독 + 판례 필사</div>
       </div>
       <div class="card mile">
         <div class="k">다가오는 완강·완독</div>
@@ -296,7 +296,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
     <table>
       <thead><tr>
         <th>날짜</th><th>자연과학 강의</th><th class="num">강</th><th class="num">강의+예습</th>
-        <th>민법연습장</th><th>특허연습장</th><th class="num">가용</th><th class="num">하루 총합</th>
+        <th>민법연습장</th><th>특허연습장</th><th class="num">필사</th><th class="num">하루 총합</th>
       </tr></thead>
       <tbody id="schedBody"></tbody>
     </table>
@@ -357,13 +357,13 @@ const DEFAULTS = {
   settings:{
     rampStart:"2026-09-17",
     capRamp:[260,275,300,330,350], // 주차별 하루 총 순공 목표(분). 이후 마지막 값 유지
-    dayCap:{ "2026-09-17":340, "2026-09-18":340, "2026-09-21":340, "2026-09-22":340, "2026-09-23":340, "2026-09-24":340, "2026-09-25":340, "2026-09-28":340, "2026-09-29":340, "2026-09-30":340, "2026-10-01":355, "2026-10-02":355, "2026-10-05":355, "2026-10-06":355, "2026-10-07":355, "2026-10-08":355, "2026-10-09":355, "2026-10-12":355, "2026-10-13":355, "2026-10-14":355, "2026-10-15":355, "2026-10-16":355, "2026-10-19":340, "2026-10-20":340, "2026-10-21":340, "2026-10-23":340 },
+    dayCap:{ "2026-09-17":325, "2026-09-18":325, "2026-09-21":325, "2026-09-22":325, "2026-09-23":325, "2026-09-24":325, "2026-09-25":325, "2026-09-28":325, "2026-09-29":325, "2026-09-30":325, "2026-10-01":340, "2026-10-02":340, "2026-10-05":340, "2026-10-06":340, "2026-10-07":340, "2026-10-08":340, "2026-10-09":340, "2026-10-12":340, "2026-10-13":340, "2026-10-14":340, "2026-10-15":340, "2026-10-16":340, "2026-10-19":325, "2026-10-20":325, "2026-10-21":325, "2026-10-23":325 },
     offDays:["2026-10-22","2026-10-24","2026-10-25","2026-10-26","2026-10-27"],
     mgSpeed:6, ptSpeed:15,         // p/h — 보수적으로 잡은 값 (2026-09-09 사용자 지정)
     mgStart:3, mgEnd:275, ptStart:2, ptEnd:362,
     mgName:"민법연습장", ptName:"특허연습장",
     cycle1End:"2026-10-16", cycleDays:30,
-    minsoMin:15, writeMin:15,
+    writeMin:15,
     holidays:[], useHolidays:false
   },
   checks:{}
@@ -474,7 +474,7 @@ function build(){
     const m=MG[iso(d)], p=PT[iso(d)];
     if(i>=q.length && !m && !p) break;
     const cap=capacity(d);
-    const fixed=st.minsoMin+st.writeMin;
+    const fixed=st.writeMin;
     const budget=Math.max(0, cap - (m?m.min:0) - (p?p.min:0) - fixed);
     let acc=0; const got=[];
     while(i<q.length && budget>0){
@@ -542,7 +542,6 @@ function renderToday(){
       {id:"sci", lbl:"자연과학", val:lecLabel(row.lec), sub:row.lec.length+"강 · 예습 "+fm(row.lec.reduce((a,b)=>a+b.prep,0))+" + 강의 "+fm(row.lec.reduce((a,b)=>a+b.min,0)), min:row.lecMin},
       row.mg&&{id:"mg", lbl:S.settings.mgName, val:row.mg.a+" - "+row.mg.b+"p", sub:row.mg.n+"p · "+S.settings.mgSpeed+"p/h (환산)", min:row.mg.min},
       row.pt&&{id:"pt", lbl:S.settings.ptName, val:row.pt.a+" - "+row.pt.b+"p", sub:row.pt.n+"p · "+S.settings.ptSpeed+"p/h (미측정)", min:row.pt.min},
-      {id:"ms", lbl:"민소 객관식", val:"9-10문항", sub:"채점 세션에서 출제", min:S.settings.minsoMin},
       {id:"wr", lbl:"판례 필사", val:"민소 주요 판례 10개", sub:"키워드 또박또박 · 주 5일", min:S.settings.writeMin}
     ].filter(Boolean);
     ul.innerHTML=items.map(x=>{
@@ -554,7 +553,7 @@ function renderToday(){
     }).join("");
     const doneMin=items.filter(x=>S.checks[key][x.id]).reduce((a,b)=>a+b.min,0);
     document.getElementById("tTotal").textContent=fm(row.total);
-    document.getElementById("tTotalSub").textContent = doneMin ? "완료 "+fm(doneMin)+" · 남음 "+fm(row.total-doneMin) : "강의 + 회독 + 민소 + 판례 필사";
+    document.getElementById("tTotalSub").textContent = doneMin ? "완료 "+fm(doneMin)+" · 남음 "+fm(row.total-doneMin) : "강의 + 회독 + 판례 필사";
   }
   const ms=milestones();
   document.getElementById("tMiles").innerHTML=ms.map(m=>
@@ -583,7 +582,7 @@ function renderSched(){
       <td class="num">${r.lecMin?fm(r.lecMin):"—"}</td>
       <td class="num">${r.mg?r.mg.a+"-"+r.mg.b+"p":"—"}</td>
       <td class="num">${r.pt?r.pt.a+"-"+r.pt.b+"p":"—"}</td>
-      <td class="num">${fm(r.cap)}</td>
+      <td class="num">15분</td>
       <td class="num">${tot}</td></tr>`;
   }).join("");
   const over=rows.filter(r=>r.total>420).length;
@@ -647,7 +646,8 @@ const RULES=[
     "회독 분량은 <b>그날 가용시간에 비례</b>해 나눈다. 전업일은 더 많이, 가벼운 날은 더 적게 가져간다."]},
   {t:"특이 일정", warn:true, items:[
     "9/11-9/15 미실시 → 완강일·회독완료일을 <b>1주씩 뒤로</b> 밀었다. 하루 9시간대가 과해서 내린 결정.",
-    "<b>글씨 교정 → 민소 판례 따라쓰기</b>로 바꿨다(하루 10개 · 15분). 글씨와 판례 암기를 한 번에.",
+    "<b>글씨 교정 → 민소 판례 따라쓰기</b>로 바꿨다(하루 10항목 · 15분). 글씨와 판례 암기를 한 번에.",
+    "<b>민소 객관식은 일과에서 뺐다</b>(2026-09-17). 만들어 둔 퀴즈 파일은 그대로 남겨 둔다.",
     "하루 <b>5시간대</b>로 돌아왔다. 화학 완강 9/28 · 물리 입문 9/30 · 회독 1 완료 10/16 · 물리 기본 10/19.",
     "<b>10/22(목) · 10/26(월) · 10/27(화)</b> 공부 못 함 (10/24-25는 원래 주말)",
     "공휴일은 무시한다 — 추석·한글날에도 주 5일 그대로 간다."]},
@@ -657,7 +657,7 @@ const RULES=[
     "미개강 강의(<b>*</b> 표시)는 같은 과목 실측 평균으로 추정한 값이다."]},
   {t:"세션 분리", items:[
     "<b>계획 세션</b> — 일정 재산출·진도 로그·알림 루틴.",
-    "<b>채점·퀴즈 세션</b> — 민소 객관식 출제·채점·판례 누적.",
+    "<b>채점·퀴즈 세션</b> — 객관식 퀴즈는 일과에서 뺐다. 파일은 보존.",
     "진도가 바뀌면 이 판을 먼저 고치고, 채점 세션에는 파일로 전달된다."]}
 ];
 function renderRules(){
