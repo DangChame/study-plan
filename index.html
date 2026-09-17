@@ -276,12 +276,14 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
     <div class="btns">
       <button class="pri" id="btnToday">오늘 한 만큼 진도 올리기</button>
       <button id="btnSave">직접 고친 값 저장</button>
-      <button id="btnReset">되돌리기</button>
+      <button id="btnReset">사이트 기준으로 되돌리기</button>
       <button id="btnLink">이 진도로 링크 복사</button>
       <span class="saveState" id="saveState"></span>
     </div>
     <p class="hint">위 «오늘» 칸에서 끝낸 항목을 체크한 뒤 <b>오늘 한 만큼 진도 올리기</b>를 누르면 숫자가 알아서 올라간다.
     계획과 다르게 나갔을 때만(강의를 덜 들었거나 페이지를 더 봤을 때) 숫자를 직접 고치고 <b>직접 고친 값 저장</b>을 누른다.</p>
+    <p class="hint">진도는 <b>사이트에 배포된 값</b>과 <b>이 브라우저에 저장된 값</b> 중 <b>더 나중 것</b>이 자동으로 쓰인다.
+    계획을 다시 짜서 새로 배포하면 그쪽이 최신이 되므로, 주소창에 <b>dangchame.github.io/study-plan</b> 만 쳐도 최신이 나온다.</p>
     <p class="hint" id="syncHint"></p>
   </div>
 </section>
@@ -352,6 +354,9 @@ const INV = [{"id":"chemPast","name":"화학 기출풀이","short":"화학기출
 
 /* ---------------- 기본 설정 ---------------- */
 const SETTINGS_VERSION = 5;   // 교재·속도·기간이 바뀌면 올린다
+// 배포 시점의 진도. Claude가 재산출할 때마다 갱신된다.
+// 주소창에 그냥 dangchame.github.io/study-plan 만 쳐도 이 값이 기본이 된다.
+const PUBLISHED = { at: "2026-09-17T13:49:47+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":44,"ptPage":51} };
 const DEFAULTS = {
   progress:{ chemPast:2, phyIntro:4, phyBase:0, phyPast1:0, phyPast2:0, chemMC:0, chemFin:0,
              bioBase:0, bioPast:0, bioMC:0, bioFin:0, earthBase:0, earthMC:0,
@@ -385,6 +390,8 @@ let DB = null, dbDoc = null;
 /* ---------------- 날짜 유틸 ---------------- */
 const WD = ["일","월","화","수","목","금","토"];
 const iso = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const stamp = () => new Date().toISOString();
+const ts = v => { const n = v ? Date.parse(v) : NaN; return isNaN(n) ? 0 : n; };
 const parse = s => { const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); };
 const addD = (d,n)=>{ const x=new Date(d); x.setDate(x.getDate()+n); return x; };
 const md = d => (d.getMonth()+1)+"/"+d.getDate();
@@ -696,7 +703,10 @@ function renderAll(){
   build(); renderToday(); renderSched(); renderCyc();
   document.getElementById("schedTabs").innerHTML=
     ['all','9','10','11','12'].map(s=>`<button data-s="${s}" aria-selected="${schedScope===s}">${s==='all'?'전체':s+'월'}</button>`).join("");
-  document.getElementById("footStamp").textContent="마지막 갱신 "+(S.updatedAt||iso(today()));
+  const at=S.updatedAt||PUBLISHED.at;
+  const d=new Date(ts(at)||Date.now());
+  document.getElementById("footStamp").textContent=
+    `진도 기준 ${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")} · ${SOURCE}`;
 }
 
 /* ---------------- 이벤트 ---------------- */
@@ -719,7 +729,7 @@ document.getElementById("btnSave").addEventListener("click",()=>{
   FIELDS.forEach(f=>{ const v=Number(document.getElementById("f_"+f.k).value); if(!isNaN(v)) S.progress[f.k]=v; });
   const rs=document.getElementById("f_rampStart").value;
   if(/^\d{4}-\d{2}-\d{2}$/.test(rs)) S.settings.rampStart=rs;
-  S.updatedAt=iso(today());
+  S.updatedAt=stamp(); SOURCE="내가 입력";
   renderAll(); save();
 });
 document.getElementById("btnToday").addEventListener("click",()=>{
@@ -729,14 +739,19 @@ document.getElementById("btnToday").addEventListener("click",()=>{
   if(ck.sci) row.lec.forEach(l=>{ S.progress[l.courseId]=(S.progress[l.courseId]||0)+1; });
   if(ck.mg && row.mg) S.progress.mgPage=row.mg.b;
   if(ck.pt && row.pt) S.progress.ptPage=row.pt.b;
-  S.updatedAt=iso(today());
+  S.updatedAt=stamp(); SOURCE="내가 입력";
   renderInputs(); renderAll(); save();
 });
-document.getElementById("btnReset").addEventListener("click",()=>{ renderInputs(); });
+document.getElementById("btnReset").addEventListener("click",()=>{
+  Object.assign(S.progress, PUBLISHED.progress);
+  S.updatedAt=PUBLISHED.at; SOURCE="사이트";
+  renderInputs(); renderAll(); save();
+  flash("사이트 배포본 진도로 되돌렸다",true);
+});
 
 /* ---------------- URL 해시 상태 ---------------- */
 function encodeState(){
-  try{ return btoa(JSON.stringify({p:S.progress, r:S.settings.rampStart})); }catch(e){ return ""; }
+  try{ return btoa(JSON.stringify({p:S.progress, r:S.settings.rampStart, t:S.updatedAt||PUBLISHED.at})); }catch(e){ return ""; }
 }
 function readHash(){
   const h=location.hash.replace(/^#/,""); if(!h) return null;
@@ -750,7 +765,7 @@ function pushHash(){
 let saveTimer=null;
 function flash(msg,ok){ const el=document.getElementById("saveState"); el.textContent=msg; el.className="saveState"+(ok?" ok":""); }
 function save(quiet){
-  const payload={v:SETTINGS_VERSION, progress:S.progress, settings:S.settings, checks:S.checks, updatedAt:S.updatedAt||iso(today())};
+  const payload={v:SETTINGS_VERSION, progress:S.progress, settings:S.settings, checks:S.checks, updatedAt:S.updatedAt||stamp()};
   try{ localStorage.setItem("plan-state",JSON.stringify(payload)); }catch(e){}
   pushHash();
   if(dbDoc){
@@ -761,7 +776,8 @@ function save(quiet){
 // 저장본에서 되살릴 설정은 사용자가 화면에서 고칠 수 있는 것뿐이다.
 // 교재 쪽수·속도·회독 기간은 항상 코드의 최신값을 쓴다 — 옛 저장본이 덮어써 표기가 깨지는 것을 막는다.
 const USER_SETTINGS = ["rampStart"];
-function apply(p){
+let SOURCE = "사이트";   // 지금 화면에 반영된 진도가 어디서 왔는지
+function apply(p, label){
   if(!p) return;
   if(p.progress) Object.assign(S.progress,p.progress);
   if(p.settings && p.v === SETTINGS_VERSION){
@@ -769,10 +785,28 @@ function apply(p){
   }
   if(p.checks) S.checks=p.checks;
   S.updatedAt=p.updatedAt;
+  if(label) SOURCE=label;
 }
-try{ apply(JSON.parse(localStorage.getItem("plan-state"))); }catch(e){}
+// 후보 중 가장 최신인 것을 고른다.
+// 사이트를 새로 배포하면 PUBLISHED.at이 갱신되므로, 내가 입력한 것보다 나중이면 배포본이 이긴다.
+function pickLatest(cands){
+  let best=null;
+  for(const c of cands){ if(!c || !c.data) continue;
+    if(!best || ts(c.at) >= ts(best.at)) best=c; }
+  return best;
+}
+let LOCAL=null;
+try{ LOCAL=JSON.parse(localStorage.getItem("plan-state")); }catch(e){}
 const HASH=readHash();
-if(HASH){ Object.assign(S.progress,HASH.p); if(HASH.r) S.settings.rampStart=HASH.r; }
+{
+  const pick=pickLatest([
+    {at:PUBLISHED.at, data:{v:SETTINGS_VERSION, progress:PUBLISHED.progress}, label:"사이트"},
+    LOCAL && {at:LOCAL.updatedAt, data:LOCAL, label:"내가 입력"},
+    HASH && {at:HASH.t, data:{v:SETTINGS_VERSION, progress:HASH.p, settings:HASH.r?{rampStart:HASH.r}:null}, label:"링크"}
+  ]);
+  if(pick) apply(pick.data, pick.label);
+  if(LOCAL && LOCAL.checks) S.checks=LOCAL.checks;   // 오늘 체크는 항상 이 기기 것
+}
 // 구 교재 기준으로 저장된 페이지 값이 남아 있으면 되돌린다
 (function clampPages(){
   const st=S.settings;
