@@ -254,7 +254,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
       <div class="card stat">
         <div class="k">오늘 순공</div>
         <div class="v mono" id="tTotal">—</div>
-        <div class="s" id="tTotalSub">강의 + 회독 + 민소 + 글씨</div>
+        <div class="s" id="tTotalSub">강의 + 회독 + 민소 + 판례 필사</div>
       </div>
       <div class="card mile">
         <div class="k">다가오는 완강·완독</div>
@@ -353,17 +353,17 @@ const INV = [{"id":"chemPast","name":"화학 기출풀이","short":"화학기출
 const DEFAULTS = {
   progress:{ chemPast:2, phyIntro:4, phyBase:0, phyPast1:0, phyPast2:0, chemMC:0, chemFin:0,
              bioBase:0, bioPast:0, bioMC:0, bioFin:0, earthBase:0, earthMC:0,
-             mgPage:44, ptPage:45 },
+             mgPage:44, ptPage:51 },
   settings:{
-    rampStart:"2026-09-16",
+    rampStart:"2026-09-17",
     capRamp:[260,275,300,330,350], // 주차별 하루 총 순공 목표(분). 이후 마지막 값 유지
-    dayCap:{ "2026-09-16":315, "2026-09-17":315, "2026-09-18":315, "2026-09-21":315, "2026-09-22":315, "2026-09-23":315, "2026-09-24":315, "2026-09-25":315, "2026-09-28":315, "2026-09-29":315, "2026-09-30":315, "2026-10-01":345, "2026-10-02":345, "2026-10-05":345, "2026-10-06":345, "2026-10-07":345, "2026-10-08":345, "2026-10-09":345, "2026-10-12":345, "2026-10-13":345, "2026-10-14":345, "2026-10-15":345, "2026-10-16":345, "2026-10-19":330, "2026-10-20":330, "2026-10-21":330, "2026-10-23":330 },
+    dayCap:{ "2026-09-17":340, "2026-09-18":340, "2026-09-21":340, "2026-09-22":340, "2026-09-23":340, "2026-09-24":340, "2026-09-25":340, "2026-09-28":340, "2026-09-29":340, "2026-09-30":340, "2026-10-01":355, "2026-10-02":355, "2026-10-05":355, "2026-10-06":355, "2026-10-07":355, "2026-10-08":355, "2026-10-09":355, "2026-10-12":355, "2026-10-13":355, "2026-10-14":355, "2026-10-15":355, "2026-10-16":355, "2026-10-19":340, "2026-10-20":340, "2026-10-21":340, "2026-10-23":340 },
     offDays:["2026-10-22","2026-10-24","2026-10-25","2026-10-26","2026-10-27"],
     mgSpeed:6, ptSpeed:15,         // p/h — 보수적으로 잡은 값 (2026-09-09 사용자 지정)
     mgStart:3, mgEnd:275, ptStart:2, ptEnd:362,
     mgName:"민법연습장", ptName:"특허연습장",
     cycle1End:"2026-10-16", cycleDays:30,
-    minsoMin:15, writeMin:10,
+    minsoMin:15, writeMin:15,
     holidays:[], useHolidays:false
   },
   checks:{}
@@ -543,7 +543,7 @@ function renderToday(){
       row.mg&&{id:"mg", lbl:S.settings.mgName, val:row.mg.a+" - "+row.mg.b+"p", sub:row.mg.n+"p · "+S.settings.mgSpeed+"p/h (환산)", min:row.mg.min},
       row.pt&&{id:"pt", lbl:S.settings.ptName, val:row.pt.a+" - "+row.pt.b+"p", sub:row.pt.n+"p · "+S.settings.ptSpeed+"p/h (미측정)", min:row.pt.min},
       {id:"ms", lbl:"민소 객관식", val:"9-10문항", sub:"채점 세션에서 출제", min:S.settings.minsoMin},
-      {id:"wr", lbl:"글씨 교정", val:"법률용어 + 속도 예문", sub:"주 5일 · 10분", min:S.settings.writeMin}
+      {id:"wr", lbl:"판례 필사", val:"민소 주요 판례 10개", sub:"키워드 또박또박 · 주 5일", min:S.settings.writeMin}
     ].filter(Boolean);
     ul.innerHTML=items.map(x=>{
       const ck=S.checks[key][x.id]?" checked":"";
@@ -554,7 +554,7 @@ function renderToday(){
     }).join("");
     const doneMin=items.filter(x=>S.checks[key][x.id]).reduce((a,b)=>a+b.min,0);
     document.getElementById("tTotal").textContent=fm(row.total);
-    document.getElementById("tTotalSub").textContent = doneMin ? "완료 "+fm(doneMin)+" · 남음 "+fm(row.total-doneMin) : "강의 + 회독 + 민소 + 글씨";
+    document.getElementById("tTotalSub").textContent = doneMin ? "완료 "+fm(doneMin)+" · 남음 "+fm(row.total-doneMin) : "강의 + 회독 + 민소 + 판례 필사";
   }
   const ms=milestones();
   document.getElementById("tMiles").innerHTML=ms.map(m=>
@@ -647,6 +647,7 @@ const RULES=[
     "회독 분량은 <b>그날 가용시간에 비례</b>해 나눈다. 전업일은 더 많이, 가벼운 날은 더 적게 가져간다."]},
   {t:"특이 일정", warn:true, items:[
     "9/11-9/15 미실시 → 완강일·회독완료일을 <b>1주씩 뒤로</b> 밀었다. 하루 9시간대가 과해서 내린 결정.",
+    "<b>글씨 교정 → 민소 판례 따라쓰기</b>로 바꿨다(하루 10개 · 15분). 글씨와 판례 암기를 한 번에.",
     "하루 <b>5시간대</b>로 돌아왔다. 화학 완강 9/28 · 물리 입문 9/30 · 회독 1 완료 10/16 · 물리 기본 10/19.",
     "<b>10/22(목) · 10/26(월) · 10/27(화)</b> 공부 못 함 (10/24-25는 원래 주말)",
     "공휴일은 무시한다 — 추석·한글날에도 주 5일 그대로 간다."]},
