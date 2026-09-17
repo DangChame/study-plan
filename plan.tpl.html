@@ -1,3 +1,4 @@
+<meta http-equiv="cache-control" content="no-cache, must-revalidate">
 <title>변리사 1차 진도판</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -342,14 +343,14 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
 const INV = /*INVENTORY*/;
 
 /* ---------------- 기본 설정 ---------------- */
-const SETTINGS_VERSION = 5;   // 교재·속도·기간이 바뀌면 올린다
+const SETTINGS_VERSION = 6;   // 교재·속도·기간이 바뀌면 올린다
 // 배포 시점의 진도. Claude가 재산출할 때마다 갱신된다.
 // 주소창에 그냥 dangchame.github.io/study-plan 만 쳐도 이 값이 기본이 된다.
 const PUBLISHED = { at: "/*PUBLISHED_AT*/", progress: /*PUBLISHED_PROGRESS*/ };
 const DEFAULTS = {
   progress:{ chemPast:2, phyIntro:4, phyBase:0, phyPast1:0, phyPast2:0, chemMC:0, chemFin:0,
              bioBase:0, bioPast:0, bioMC:0, bioFin:0, earthBase:0, earthMC:0,
-             mgPage:44, ptPage:51 },
+             mgPage:44, ptPage:51, traceDone:0 },
   settings:{
     rampStart:"2026-09-17",
     capRamp:[260,275,300,330,350], // 주차별 하루 총 순공 목표(분). 이후 마지막 값 유지
@@ -370,6 +371,29 @@ const HOLIDAY_SUGGEST = [
   ["2026-12-25","성탄절"],["2027-01-01","신정"]
 ];
 const EXAM = "2027-02-20";
+// 판례 필사 회차 — 민소_판례_필사장.md 와 같은 순서
+const TRACE = [
+  ["1-2-1","신의칙 — 소송상 권능의 실효"],
+  ["1-2-2","신의칙 — 모순되는 거동의 금지"],
+  ["1-2-3","편취판결 · 실효의 원칙"],
+  ["1-2-4","관련재판적 · 관할선택권 남용"],
+  ["2-1-2","재판권 — 주권면제"],
+  ["2-2-1","국제재판관할 — 실질적 관련성"],
+  ["2-2-2","국제재판관할 — 관련사건·법인"],
+  ["2-3","관할의 종류와 합의관할"],
+  ["—","소송요건 · 소의 이익"],
+  ["—","당사자능력 · 당사자적격"],
+  ["2-4-1","법관의 제척"],
+  ["2-4-2","법관의 기피"],
+  ["2-5-2","합의관할과 이송"],
+  ["2-6A","이송결정의 기속력"],
+  ["2-7-1","당사자확정과 표시정정"],
+  ["2-7-3","제소 전 사망"],
+  ["2-8-1","소송 중 사망과 절차의 중단"],
+  ["2-9","조합의 소송수행"],
+  ["2-10-1","당사자적격"],
+  ["2-11-1 · 2-14","소송능력과 쌍방대리"]
+];
 const ORDER = ["chemPast","phyIntro","phyBase","phyPast1","phyPast2","chemMC","chemFin",
                "bioBase","bioPast","bioMC","bioFin","earthBase","earthMC"];
 
@@ -540,7 +564,14 @@ function renderToday(){
       {id:"sci", lbl:"자연과학", val:lecLabel(row.lec), sub:row.lec.length+"강 · 예습 "+fm(row.lec.reduce((a,b)=>a+b.prep,0))+" + 강의 "+fm(row.lec.reduce((a,b)=>a+b.min,0)), min:row.lecMin},
       row.mg&&{id:"mg", lbl:S.settings.mgName, val:row.mg.a+" - "+row.mg.b+"p", sub:row.mg.n+"p · "+S.settings.mgSpeed+"p/h (환산)", min:row.mg.min},
       row.pt&&{id:"pt", lbl:S.settings.ptName, val:row.pt.a+" - "+row.pt.b+"p", sub:row.pt.n+"p · "+S.settings.ptSpeed+"p/h (미측정)", min:row.pt.min},
-      {id:"wr", lbl:"판례 필사", val:"민소 주요 판례 10개", sub:"키워드 또박또박 · 주 5일", min:S.settings.writeMin}
+      (function(){
+        const i=S.progress.traceDone||0;
+        const t=TRACE[i];
+        return {id:"wr", lbl:"판례 필사",
+          val: t ? `${i+1}회차 · 사례 ${t[0]}` : "필사장 소진 — 다음 회차 요청",
+          sub: t ? `${t[1]} · 10항목` : "민소_판례_필사장.md 에 추가 필요",
+          min:S.settings.writeMin};
+      })()
     ].filter(Boolean);
     ul.innerHTML=items.map(x=>{
       const ck=S.checks[key][x.id]?" checked":"";
@@ -671,14 +702,19 @@ const FIELDS=[
   {k:"phyPast2", l:"물리 기출 2단계", u:"강"},
   {k:"chemMC", l:"화학 객관식", u:"강"},
   {k:"mgPage", l:"민법연습장", u:"p까지"},
-  {k:"ptPage", l:"특허연습장", u:"p까지"}
+  {k:"ptPage", l:"특허연습장", u:"p까지"},
+  {k:"traceDone", l:"판례 필사", u:"회차까지"}
 ];
 const DATEFLD={k:"rampStart", l:"증량 시작일", hint:"실적이 안 따라오면 이 날짜를 뒤로 미루면 된다"};
 function renderInputs(){
   document.getElementById("igrid").innerHTML=FIELDS.map(f=>{
     const c=INV.find(x=>x.id===f.k);
     const st=S.settings;
-    const of=c?`전체 ${c.count}강`:(f.k==="ptPage"?`${st.ptStart}-${st.ptEnd}p`:`${st.mgStart}-${st.mgEnd}p`);
+    let of;
+    if(c) of=`전체 ${c.count}강`;
+    else if(f.k==="ptPage") of=`${st.ptStart}-${st.ptEnd}p`;
+    else if(f.k==="traceDone") of=`전체 ${TRACE.length}회차 작성됨`;
+    else of=`${st.mgStart}-${st.mgEnd}p`;
     return `<div class="fld"><label for="f_${f.k}">${f.l}</label>
       <div class="row"><input type="number" id="f_${f.k}" min="0" value="${S.progress[f.k]}"><span class="unit">${f.u}</span></div>
       <div class="of">${of}</div></div>`;
@@ -728,6 +764,7 @@ document.getElementById("btnToday").addEventListener("click",()=>{
   if(ck.sci) row.lec.forEach(l=>{ S.progress[l.courseId]=(S.progress[l.courseId]||0)+1; });
   if(ck.mg && row.mg) S.progress.mgPage=row.mg.b;
   if(ck.pt && row.pt) S.progress.ptPage=row.pt.b;
+  if(ck.wr) S.progress.traceDone=Math.min((S.progress.traceDone||0)+1, TRACE.length);
   S.updatedAt=stamp(); SOURCE="내가 입력";
   renderInputs(); renderAll(); save();
 });
@@ -790,7 +827,7 @@ const HASH=readHash();
 {
   const pick=pickLatest([
     {at:PUBLISHED.at, data:{v:SETTINGS_VERSION, progress:PUBLISHED.progress}, label:"사이트"},
-    LOCAL && {at:LOCAL.updatedAt, data:LOCAL, label:"내가 입력"},
+    (LOCAL && LOCAL.v===SETTINGS_VERSION) ? {at:LOCAL.updatedAt, data:LOCAL, label:"내가 입력"} : null,
     HASH && {at:HASH.t, data:{v:SETTINGS_VERSION, progress:HASH.p, settings:HASH.r?{rampStart:HASH.r}:null}, label:"링크"}
   ]);
   if(pick) apply(pick.data, pick.label);
