@@ -32,7 +32,7 @@ def md2html(src):
         m=re.match(r'^##+\s+(.*)$',ls)
         if m: out.append(f'<h4>{inline(m.group(1))}</h4>'); continue
         m=re.match(r'^(\d+)\.\s+(.*)$',ls)
-        if m: out.append(f'<p class="it"><i>{m.group(1)}</i>{inline(m.group(2))}</p>'); continue
+        if m: out.append(f'<p class="it"><i>{m.group(1)}</i><span>{inline(m.group(2))}</span></p>'); continue
         out.append(f'<p>{inline(ls)}</p>')
     flush()
     return ''.join(out)
