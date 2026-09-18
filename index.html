@@ -275,14 +275,13 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
   <div class="card inputs">
     <div class="igrid" id="igrid"></div>
     <div class="btns">
-      <button class="pri" id="btnToday">오늘 한 만큼 진도 올리기</button>
-      <button id="btnSave">직접 고친 값 저장</button>
+      <button class="pri" id="btnSave">직접 고친 값 저장</button>
       <button id="btnReset">사이트 기준으로 되돌리기</button>
       <button id="btnLink">이 진도로 링크 복사</button>
       <span class="saveState" id="saveState"></span>
     </div>
-    <p class="hint">위 «오늘» 칸에서 끝낸 항목을 체크한 뒤 <b>오늘 한 만큼 진도 올리기</b>를 누르면 숫자가 알아서 올라간다.
-    계획과 다르게 나갔을 때만(강의를 덜 들었거나 페이지를 더 봤을 때) 숫자를 직접 고치고 <b>직접 고친 값 저장</b>을 누른다.</p>
+    <p class="hint">위 «오늘» 칸에서 <b>체크하면 그 즉시</b> 아래 숫자가 올라간다. 따로 누를 것은 없다. 체크를 풀면 되돌아간다.
+    계획과 다르게 나갔을 때만(강의를 3강 중 1강만 들었을 때 등) 숫자를 직접 고치고 <b>직접 고친 값 저장</b>을 누른다.</p>
     <p class="hint">진도는 <b>사이트에 배포된 값</b>과 <b>이 브라우저에 저장된 값</b> 중 <b>더 나중 것</b>이 자동으로 쓰인다.
     계획을 다시 짜서 새로 배포하면 그쪽이 최신이 되므로, 주소창에 <b>dangchame.github.io/study-plan</b> 만 쳐도 최신이 나온다.</p>
     <p class="hint" id="syncHint"></p>
@@ -354,18 +353,18 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
 const INV = [{"id":"chemPast","name":"화학 기출풀이","short":"화학기출","prep":20,"est":false,"lectures":[{"n":"1강","m":55.45},{"n":"2강","m":56.68},{"n":"3강","m":41.88},{"n":"4강","m":66.48},{"n":"5강","m":52.95},{"n":"6강","m":35.63},{"n":"7강","m":80.58},{"n":"8강","m":52.15},{"n":"9강","m":48.45},{"n":"10강","m":78.37},{"n":"11강","m":52.37},{"n":"12강","m":53.7},{"n":"13강","m":77.78},{"n":"14강","m":60.18},{"n":"15강","m":32.22},{"n":"16강","m":65.8},{"n":"17강","m":56.12},{"n":"18강","m":52.38},{"n":"19강","m":73.13},{"n":"20강","m":49.17},{"n":"21강","m":39.38},{"n":"22강","m":81.57},{"n":"23강","m":38.28},{"n":"24강","m":56.32},{"n":"25강","m":94.82}],"count":25},{"id":"phyIntro","name":"물리 입문","short":"물리입문","prep":0,"est":false,"lectures":[{"n":"1회1강","m":18},{"n":"1회2강","m":44},{"n":"1회3강","m":40},{"n":"1회4강","m":39},{"n":"2회1강","m":69},{"n":"2회2강","m":55},{"n":"2회3강","m":57},{"n":"3회1강","m":66},{"n":"3회2강","m":60},{"n":"3회3강","m":66},{"n":"4회1강","m":54},{"n":"4회2강","m":49},{"n":"4회3강","m":46}],"count":13},{"id":"phyBase","name":"물리 기본","short":"물리기본","prep":0,"est":false,"lectures":[{"n":"1회1강","m":64},{"n":"1회2강","m":63},{"n":"1회3강","m":64},{"n":"2회1강","m":66},{"n":"2회2강","m":66},{"n":"2회3강","m":62},{"n":"3회1강","m":63},{"n":"3회2강","m":59},{"n":"3회3강","m":67},{"n":"4회1강","m":66},{"n":"4회2강","m":58},{"n":"4회3강","m":68},{"n":"5회1강","m":56},{"n":"5회2강","m":65},{"n":"5회3강","m":58},{"n":"6회1강","m":63},{"n":"6회2강","m":64},{"n":"6회3강","m":55},{"n":"7회1강","m":59},{"n":"7회2강","m":62},{"n":"7회3강","m":64},{"n":"8회1강","m":60},{"n":"8회2강","m":64},{"n":"8회3강","m":51},{"n":"9회1강","m":58},{"n":"9회2강","m":67},{"n":"9회3강","m":56},{"n":"10회1강","m":63},{"n":"10회2강","m":61},{"n":"10회3강","m":58},{"n":"11회1강","m":60},{"n":"11회2강","m":62},{"n":"11회3강","m":66},{"n":"12회1강","m":66},{"n":"12회2강","m":63},{"n":"12회3강","m":64},{"n":"13회1강","m":60},{"n":"13회2강","m":64},{"n":"13회3강","m":65},{"n":"14회1강","m":61},{"n":"14회2강","m":62},{"n":"14회3강","m":59},{"n":"15회1강","m":68},{"n":"15회2강","m":65},{"n":"15회3강","m":59},{"n":"16회1강","m":60},{"n":"16회2강","m":62},{"n":"16회3강","m":66},{"n":"17회1강","m":58},{"n":"17회2강","m":60},{"n":"17회3강","m":62},{"n":"18회1강","m":66},{"n":"18회2강","m":59},{"n":"18회3강","m":66},{"n":"19회1강","m":65},{"n":"19회2강","m":60},{"n":"19회3강","m":70},{"n":"20회1강","m":63},{"n":"20회2강","m":65},{"n":"20회3강","m":64},{"n":"21회1강","m":66},{"n":"21회2강","m":63},{"n":"21회3강","m":59},{"n":"22회1강","m":61},{"n":"22회2강","m":36},{"n":"23회1강","m":40}],"count":66},{"id":"phyPast1","name":"물리 기출 1단계","short":"물리기출1","prep":30,"est":false,"lectures":[{"n":"1회1강","m":69},{"n":"1회2강","m":59},{"n":"1회3강","m":64},{"n":"2회1강","m":58},{"n":"2회2강","m":68},{"n":"2회3강","m":60},{"n":"3회1강","m":64},{"n":"3회2강","m":60},{"n":"3회3강","m":65},{"n":"4회1강","m":60},{"n":"4회2강","m":60},{"n":"5회1강","m":59},{"n":"5회2강","m":64},{"n":"5회3강","m":75},{"n":"6회1강","m":68},{"n":"6회2강","m":66},{"n":"6회3강","m":58},{"n":"7회1강","m":58},{"n":"7회2강","m":62},{"n":"7회3강","m":66},{"n":"8회1강","m":62},{"n":"8회2강","m":50}],"count":22},{"id":"phyPast2","name":"물리 기출 2단계","short":"물리기출2","prep":30,"est":false,"lectures":[{"n":"1회1강","m":64},{"n":"1회2강","m":68},{"n":"1회3강","m":59},{"n":"2회1강","m":52},{"n":"2회2강","m":63},{"n":"2회3강","m":58},{"n":"3회1강","m":60},{"n":"3회2강","m":63},{"n":"3회3강","m":64},{"n":"4회1강","m":62},{"n":"4회2강","m":62},{"n":"4회3강","m":63},{"n":"5회1강","m":61.5,"e":1},{"n":"5회2강","m":61.5,"e":1},{"n":"5회3강","m":61.5,"e":1},{"n":"6회1강","m":61.5,"e":1},{"n":"6회2강","m":61.5,"e":1},{"n":"6회3강","m":61.5,"e":1}],"count":18},{"id":"chemMC","name":"화학 객관식","short":"화학객관식","prep":20,"est":true,"lectures":[{"n":"1강","m":58.1,"e":1},{"n":"2강","m":58.1,"e":1},{"n":"3강","m":58.1,"e":1},{"n":"4강","m":58.1,"e":1},{"n":"5강","m":58.1,"e":1},{"n":"6강","m":58.1,"e":1},{"n":"7강","m":58.1,"e":1},{"n":"8강","m":58.1,"e":1},{"n":"9강","m":58.1,"e":1},{"n":"10강","m":58.1,"e":1},{"n":"11강","m":58.1,"e":1},{"n":"12강","m":58.1,"e":1},{"n":"13강","m":58.1,"e":1},{"n":"14강","m":58.1,"e":1},{"n":"15강","m":58.1,"e":1},{"n":"16강","m":58.1,"e":1},{"n":"17강","m":58.1,"e":1},{"n":"18강","m":58.1,"e":1},{"n":"19강","m":58.1,"e":1},{"n":"20강","m":58.1,"e":1},{"n":"21강","m":58.1,"e":1},{"n":"22강","m":58.1,"e":1},{"n":"23강","m":58.1,"e":1},{"n":"24강","m":58.1,"e":1},{"n":"25강","m":58.1,"e":1},{"n":"26강","m":58.1,"e":1},{"n":"27강","m":58.1,"e":1},{"n":"28강","m":58.1,"e":1},{"n":"29강","m":58.1,"e":1},{"n":"30강","m":58.1,"e":1}],"count":30},{"id":"chemFin","name":"화학 최종정리","short":"화학최종","prep":0,"est":true,"lectures":[{"n":"1강","m":58.1,"e":1},{"n":"2강","m":58.1,"e":1},{"n":"3강","m":58.1,"e":1},{"n":"4강","m":58.1,"e":1},{"n":"5강","m":58.1,"e":1},{"n":"6강","m":58.1,"e":1},{"n":"7강","m":58.1,"e":1},{"n":"8강","m":58.1,"e":1},{"n":"9강","m":58.1,"e":1},{"n":"10강","m":58.1,"e":1}],"count":10},{"id":"bioBase","name":"생물 기본","short":"생물기본","prep":0,"est":false,"lectures":[{"n":"1회1강","m":48},{"n":"1회2강","m":51},{"n":"1회3강","m":78},{"n":"2회1강","m":59},{"n":"2회2강","m":66},{"n":"2회3강","m":71},{"n":"3회1강","m":46},{"n":"3회2강","m":54},{"n":"3회3강","m":42},{"n":"3회4강","m":58},{"n":"4회1강","m":49},{"n":"4회2강","m":81},{"n":"4회3강","m":69},{"n":"5회1강","m":63},{"n":"5회2강","m":75},{"n":"5회3강","m":73},{"n":"6회1강","m":43},{"n":"6회2강","m":75},{"n":"6회3강","m":77},{"n":"7회1강","m":61},{"n":"7회2강","m":53},{"n":"7회3강","m":69},{"n":"7회4강","m":24},{"n":"8회1강","m":65},{"n":"8회2강","m":79},{"n":"8회3강","m":67},{"n":"9회1강","m":49},{"n":"9회2강","m":57},{"n":"9회3강","m":64},{"n":"10회1강","m":57},{"n":"10회2강","m":65},{"n":"10회3강","m":53},{"n":"11회1강","m":53},{"n":"11회2강","m":63},{"n":"11회3강","m":78},{"n":"12회1강","m":59},{"n":"12회2강","m":36},{"n":"12회3강","m":62},{"n":"12회4강","m":43},{"n":"13회1강","m":45},{"n":"13회2강","m":80},{"n":"13회3강","m":81},{"n":"14회1강","m":57},{"n":"14회2강","m":57},{"n":"14회3강","m":36},{"n":"14회4강","m":60},{"n":"15회1강","m":59},{"n":"15회2강","m":73},{"n":"15회3강","m":64},{"n":"16회1강","m":48},{"n":"16회2강","m":68},{"n":"16회3강","m":56},{"n":"17회1강","m":56},{"n":"17회2강","m":67},{"n":"17회3강","m":68},{"n":"18회1강","m":49},{"n":"18회2강","m":52},{"n":"18회3강","m":58},{"n":"18회4강","m":50},{"n":"19회1강","m":53},{"n":"19회2강","m":45},{"n":"19회3강","m":44},{"n":"19회4강","m":40},{"n":"20회1강","m":46},{"n":"20회2강","m":59},{"n":"20회3강","m":81},{"n":"21회1강","m":54},{"n":"21회2강","m":67},{"n":"21회3강","m":65},{"n":"22회1강","m":38},{"n":"22회2강","m":31},{"n":"22회3강","m":15}],"count":72},{"id":"bioPast","name":"생물 핵심기출","short":"생물기출","prep":10,"est":true,"lectures":[{"n":"1강","m":57.7,"e":1},{"n":"2강","m":57.7,"e":1},{"n":"3강","m":57.7,"e":1},{"n":"4강","m":57.7,"e":1},{"n":"5강","m":57.7,"e":1},{"n":"6강","m":57.7,"e":1},{"n":"7강","m":57.7,"e":1},{"n":"8강","m":57.7,"e":1},{"n":"9강","m":57.7,"e":1},{"n":"10강","m":57.7,"e":1},{"n":"11강","m":57.7,"e":1},{"n":"12강","m":57.7,"e":1},{"n":"13강","m":57.7,"e":1},{"n":"14강","m":57.7,"e":1},{"n":"15강","m":57.7,"e":1},{"n":"16강","m":57.7,"e":1},{"n":"17강","m":57.7,"e":1},{"n":"18강","m":57.7,"e":1},{"n":"19강","m":57.7,"e":1},{"n":"20강","m":57.7,"e":1},{"n":"21강","m":57.7,"e":1},{"n":"22강","m":57.7,"e":1},{"n":"23강","m":57.7,"e":1},{"n":"24강","m":57.7,"e":1},{"n":"25강","m":57.7,"e":1},{"n":"26강","m":57.7,"e":1},{"n":"27강","m":57.7,"e":1},{"n":"28강","m":57.7,"e":1},{"n":"29강","m":57.7,"e":1},{"n":"30강","m":57.7,"e":1}],"count":30},{"id":"bioMC","name":"생물 객관식","short":"생물객관식","prep":10,"est":true,"lectures":[{"n":"1강","m":57.7,"e":1},{"n":"2강","m":57.7,"e":1},{"n":"3강","m":57.7,"e":1},{"n":"4강","m":57.7,"e":1},{"n":"5강","m":57.7,"e":1},{"n":"6강","m":57.7,"e":1},{"n":"7강","m":57.7,"e":1},{"n":"8강","m":57.7,"e":1},{"n":"9강","m":57.7,"e":1},{"n":"10강","m":57.7,"e":1},{"n":"11강","m":57.7,"e":1},{"n":"12강","m":57.7,"e":1},{"n":"13강","m":57.7,"e":1},{"n":"14강","m":57.7,"e":1},{"n":"15강","m":57.7,"e":1},{"n":"16강","m":57.7,"e":1},{"n":"17강","m":57.7,"e":1},{"n":"18강","m":57.7,"e":1},{"n":"19강","m":57.7,"e":1},{"n":"20강","m":57.7,"e":1},{"n":"21강","m":57.7,"e":1},{"n":"22강","m":57.7,"e":1},{"n":"23강","m":57.7,"e":1},{"n":"24강","m":57.7,"e":1},{"n":"25강","m":57.7,"e":1},{"n":"26강","m":57.7,"e":1},{"n":"27강","m":57.7,"e":1},{"n":"28강","m":57.7,"e":1},{"n":"29강","m":57.7,"e":1},{"n":"30강","m":57.7,"e":1}],"count":30},{"id":"bioFin","name":"생물 최종정리","short":"생물최종","prep":0,"est":true,"lectures":[{"n":"1강","m":57.7,"e":1},{"n":"2강","m":57.7,"e":1},{"n":"3강","m":57.7,"e":1},{"n":"4강","m":57.7,"e":1},{"n":"5강","m":57.7,"e":1},{"n":"6강","m":57.7,"e":1},{"n":"7강","m":57.7,"e":1},{"n":"8강","m":57.7,"e":1},{"n":"9강","m":57.7,"e":1},{"n":"10강","m":57.7,"e":1},{"n":"11강","m":57.7,"e":1},{"n":"12강","m":57.7,"e":1},{"n":"13강","m":57.7,"e":1},{"n":"14강","m":57.7,"e":1},{"n":"15강","m":57.7,"e":1}],"count":15},{"id":"earthBase","name":"지구과학 기본","short":"지구기본","prep":0,"est":false,"lectures":[{"n":"1회1강","m":90},{"n":"1회2강","m":76},{"n":"1회3강","m":57},{"n":"2회1강","m":80},{"n":"2회2강","m":61},{"n":"2회3강","m":90},{"n":"3회1강","m":97},{"n":"3회2강","m":88},{"n":"3회3강","m":54},{"n":"4회1강","m":72},{"n":"4회2강","m":93},{"n":"4회3강","m":54},{"n":"5회1강","m":97},{"n":"5회2강","m":80},{"n":"5회3강","m":74},{"n":"6회1강","m":92},{"n":"6회2강","m":56},{"n":"6회3강","m":53},{"n":"7회1강","m":107},{"n":"7회2강","m":71},{"n":"7회3강","m":55},{"n":"8회1강","m":78},{"n":"8회2강","m":80}],"count":23},{"id":"earthMC","name":"지구과학 문풀","short":"지구문풀","prep":10,"est":true,"lectures":[{"n":"1강","m":76.3,"e":1},{"n":"2강","m":76.3,"e":1},{"n":"3강","m":76.3,"e":1},{"n":"4강","m":76.3,"e":1},{"n":"5강","m":76.3,"e":1},{"n":"6강","m":76.3,"e":1},{"n":"7강","m":76.3,"e":1},{"n":"8강","m":76.3,"e":1},{"n":"9강","m":76.3,"e":1},{"n":"10강","m":76.3,"e":1}],"count":10}];
 
 /* ---------------- 기본 설정 ---------------- */
-const SETTINGS_VERSION = 6;   // 교재·속도·기간이 바뀌면 올린다
+const SETTINGS_VERSION = 7;   // 교재·속도·기간이 바뀌면 올린다
 // 배포 시점의 진도. Claude가 재산출할 때마다 갱신된다.
 // 주소창에 그냥 dangchame.github.io/study-plan 만 쳐도 이 값이 기본이 된다.
-const PUBLISHED = { at: "2026-09-17T13:55:23+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":44,"ptPage":51,"traceDone":0} };
+const PUBLISHED = { at: "2026-09-18T13:54:01+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":54,"ptPage":65,"traceDone":1} };
 const DEFAULTS = {
   progress:{ chemPast:2, phyIntro:4, phyBase:0, phyPast1:0, phyPast2:0, chemMC:0, chemFin:0,
              bioBase:0, bioPast:0, bioMC:0, bioFin:0, earthBase:0, earthMC:0,
-             mgPage:44, ptPage:51, traceDone:0 },
+             mgPage:54, ptPage:65, traceDone:1 },
   settings:{
-    rampStart:"2026-09-17",
+    rampStart:"2026-09-18",
     capRamp:[260,275,300,330,350], // 주차별 하루 총 순공 목표(분). 이후 마지막 값 유지
-    dayCap:{ "2026-09-17":325, "2026-09-18":325, "2026-09-21":325, "2026-09-22":325, "2026-09-23":325, "2026-09-24":325, "2026-09-25":325, "2026-09-28":325, "2026-09-29":325, "2026-09-30":325, "2026-10-01":340, "2026-10-02":340, "2026-10-05":340, "2026-10-06":340, "2026-10-07":340, "2026-10-08":340, "2026-10-09":340, "2026-10-12":340, "2026-10-13":340, "2026-10-14":340, "2026-10-15":340, "2026-10-16":340, "2026-10-19":325, "2026-10-20":325, "2026-10-21":325, "2026-10-23":325 },
+    dayCap:{ "2026-09-18":355, "2026-09-21":355, "2026-09-22":355, "2026-09-23":355, "2026-09-24":355, "2026-09-25":355, "2026-09-28":355, "2026-09-29":345, "2026-09-30":345, "2026-10-01":345, "2026-10-02":345, "2026-10-05":345, "2026-10-06":345, "2026-10-07":345, "2026-10-08":345, "2026-10-09":345, "2026-10-12":345, "2026-10-13":345, "2026-10-14":345, "2026-10-15":345, "2026-10-16":345, "2026-10-19":325, "2026-10-20":325, "2026-10-21":325, "2026-10-23":325 },
     offDays:["2026-10-22","2026-10-24","2026-10-25","2026-10-26","2026-10-27"],
     mgSpeed:6, ptSpeed:15,         // p/h — 보수적으로 잡은 값 (2026-09-09 사용자 지정)
     mgStart:3, mgEnd:275, ptStart:2, ptEnd:362,
@@ -374,7 +373,8 @@ const DEFAULTS = {
     writeMin:15,
     holidays:[], useHolidays:false
   },
-  checks:{}
+  checks:{},
+  dayBase:{}
 };
 const HOLIDAY_SUGGEST = [
   ["2026-09-24","추석 연휴"],["2026-09-25","추석"],
@@ -437,11 +437,16 @@ function fm(min){
 }
 
 /* ---------------- 강의 시퀀스 ---------------- */
+// 오늘 계획을 세우는 기준 진도. 오늘 체크를 시작했으면 그 시점 스냅샷을 쓴다.
+function basis(){
+  const k=iso(today());
+  return (S.dayBase && S.dayBase[k]) ? S.dayBase[k] : S.progress;
+}
 function lectureQueue(){
-  const q=[];
+  const q=[]; const B=basis();
   for(const id of ORDER){
     const c=INV.find(x=>x.id===id); if(!c) continue;
-    const done=S.progress[id]||0;
+    const done=B[id]||0;
     c.lectures.forEach((l,i)=>{
       if(i<done) return;
       q.push({course:c.short, courseId:id, name:l.n, min:l.m/2, prep:c.prep, est:!!l.e,
@@ -497,8 +502,9 @@ function build(){
   const start = t < parse(st.rampStart) ? parse(st.rampStart) : t;
   const q=lectureQueue();
   const days=studyDays(start,170);
-  const mg=cycleSlices(start,S.progress.mgPage,parse(st.cycle1End),st.mgStart,st.mgEnd,st.mgSpeed);
-  const pt=cycleSlices(start,S.progress.ptPage,parse(st.cycle1End),st.ptStart,st.ptEnd,st.ptSpeed);
+  const B=basis();
+  const mg=cycleSlices(start,B.mgPage,parse(st.cycle1End),st.mgStart,st.mgEnd,st.mgSpeed);
+  const pt=cycleSlices(start,B.ptPage,parse(st.cycle1End),st.ptStart,st.ptEnd,st.ptSpeed);
   const byDate=a=>{ const m={}; a.forEach(x=>m[iso(x.date)]=x); return m; };
   const MG=byDate(mg), PT=byDate(pt);
 
@@ -753,12 +759,33 @@ document.addEventListener("click",e=>{
   const ct=e.target.closest("#cycTabs button");
   if(ct){ cycScope=ct.dataset.c; renderCyc(); return; }
 });
+// 체크하면 그 즉시 진도가 올라간다. 체크를 풀면 되돌아간다.
+function applyChecks(){
+  const key=iso(today());
+  const base=S.dayBase && S.dayBase[key];
+  if(!base) return;
+  const row=PLAN.rows.find(r=>iso(r.date)===key);
+  Object.assign(S.progress, base);          // 일단 아침 상태로 되돌리고
+  const ck=S.checks[key]||{};
+  if(row){                                   // 체크된 것만 전진시킨다
+    if(ck.sci) row.lec.forEach(l=>{ S.progress[l.courseId]=(S.progress[l.courseId]||0)+1; });
+    if(ck.mg && row.mg) S.progress.mgPage=row.mg.b;
+    if(ck.pt && row.pt) S.progress.ptPage=row.pt.b;
+    if(ck.wr) S.progress.traceDone=Math.min((base.traceDone||0)+1, TRACE.length);
+  }
+  S.updatedAt=stamp(); SOURCE="내가 입력";
+}
 document.addEventListener("change",e=>{
   const c=e.target.closest(".chk");
   if(c){
-    const key=iso(today()); S.checks[key]=S.checks[key]||{};
+    const key=iso(today());
+    S.checks[key]=S.checks[key]||{};
+    S.dayBase=S.dayBase||{};
+    if(!S.dayBase[key]) S.dayBase[key]={...S.progress};   // 오늘 아침 상태를 한 번만 기록
     S.checks[key][c.dataset.k]=c.checked;
-    renderToday(); save(true); return;
+    applyChecks();
+    renderInputs(); renderAll(); save();
+    return;
   }
 });
 document.getElementById("btnSave").addEventListener("click",()=>{
@@ -767,17 +794,6 @@ document.getElementById("btnSave").addEventListener("click",()=>{
   if(/^\d{4}-\d{2}-\d{2}$/.test(rs)) S.settings.rampStart=rs;
   S.updatedAt=stamp(); SOURCE="내가 입력";
   renderAll(); save();
-});
-document.getElementById("btnToday").addEventListener("click",()=>{
-  const key=iso(today()), ck=S.checks[key]||{};
-  const row=PLAN.rows.find(r=>iso(r.date)===iso(today()));
-  if(!row) return;
-  if(ck.sci) row.lec.forEach(l=>{ S.progress[l.courseId]=(S.progress[l.courseId]||0)+1; });
-  if(ck.mg && row.mg) S.progress.mgPage=row.mg.b;
-  if(ck.pt && row.pt) S.progress.ptPage=row.pt.b;
-  if(ck.wr) S.progress.traceDone=Math.min((S.progress.traceDone||0)+1, TRACE.length);
-  S.updatedAt=stamp(); SOURCE="내가 입력";
-  renderInputs(); renderAll(); save();
 });
 document.getElementById("btnReset").addEventListener("click",()=>{
   Object.assign(S.progress, PUBLISHED.progress);
@@ -802,7 +818,7 @@ function pushHash(){
 let saveTimer=null;
 function flash(msg,ok){ const el=document.getElementById("saveState"); el.textContent=msg; el.className="saveState"+(ok?" ok":""); }
 function save(quiet){
-  const payload={v:SETTINGS_VERSION, progress:S.progress, settings:S.settings, checks:S.checks, updatedAt:S.updatedAt||stamp()};
+  const payload={v:SETTINGS_VERSION, progress:S.progress, settings:S.settings, checks:S.checks, dayBase:S.dayBase, updatedAt:S.updatedAt||stamp()};
   try{ localStorage.setItem("plan-state",JSON.stringify(payload)); }catch(e){}
   pushHash();
   if(dbDoc){
@@ -821,6 +837,7 @@ function apply(p, label){
     for(const k of USER_SETTINGS) if(p.settings[k]!==undefined) S.settings[k]=p.settings[k];
   }
   if(p.checks) S.checks=p.checks;
+  if(p.dayBase) S.dayBase=p.dayBase;
   S.updatedAt=p.updatedAt;
   if(label) SOURCE=label;
 }
@@ -843,6 +860,7 @@ const HASH=readHash();
   ]);
   if(pick) apply(pick.data, pick.label);
   if(LOCAL && LOCAL.checks) S.checks=LOCAL.checks;   // 오늘 체크는 항상 이 기기 것
+  if(LOCAL && LOCAL.dayBase) S.dayBase=LOCAL.dayBase;
 }
 // 구 교재 기준으로 저장된 페이지 값이 남아 있으면 되돌린다
 (function clampPages(){
