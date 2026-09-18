@@ -18,7 +18,10 @@
 | `plan.tpl.html` | 원본 템플릿. `/*INVENTORY*/` 자리에 강의 데이터가 들어간다 |
 | `lectures.json` | 13개 강좌 372강의 강별 시간·예습 단가 |
 | `progress.json` | 배포 시점의 진도 (강수·페이지) |
-| `build.py` | 위 셋을 합쳐 `index.html`을 만든다 |
+| `민소_판례_필사장.md` | 판례 필사 22회차 (사이트에서 바로 읽는다) |
+| `화학_암기시트.md` | 화학 단원별 암기 시트 |
+| `mdparse.py` | 위 두 md를 HTML로 바꾼다 |
+| `build.py` | 전부 합쳐 `index.html`을 만든다 |
 
 ## 진도가 정해지는 방식
 

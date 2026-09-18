@@ -201,6 +201,28 @@ tr.now td.d{color:var(--accent)}
 .rule li b{color:var(--ink)}
 .rule.warn h3 .dot{background:var(--warn)}
 
+/* ---------- reader ---------- */
+.reader{padding:20px 24px 24px; max-width:none}
+.reader .rhead{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid var(--line)}
+.reader .rhead b{font-family:"Gothic A1",sans-serif; font-size:17px; font-weight:800}
+.reader .rhead span{color:var(--muted); font-size:12.5px}
+.reader h4{font-family:"Gothic A1",sans-serif; font-size:13.5px; font-weight:700; color:var(--accent);
+  margin:18px 0 8px; padding-bottom:4px; border-bottom:1px solid var(--line2)}
+.reader h4:first-child{margin-top:0}
+.reader p{margin:0 0 9px; line-height:1.72; max-width:68ch}
+.reader p.it{display:flex; gap:9px; align-items:baseline}
+.reader p.it i{flex:0 0 auto; font-style:normal; font-family:"IBM Plex Mono",monospace; font-size:11px;
+  font-weight:600; color:var(--faint); min-width:16px; text-align:right; padding-top:1px}
+.reader p.note{color:var(--muted); font-size:12.5px; background:var(--card2); padding:9px 12px; border-radius:7px}
+.reader b{font-weight:600; color:var(--ink)}
+.reader .tw{overflow-x:auto; margin:0 0 12px; border:1px solid var(--line2); border-radius:8px}
+.reader table{min-width:420px; font-size:12.5px}
+.reader td,.reader th{padding:7px 11px; line-height:1.6}
+.reader thead th{position:static; font-size:10px}
+.reader td:first-child{width:34%; color:var(--ink2)}
+.rmiss{color:var(--muted); font-size:13px; padding:8px 0}
+@media (max-width:640px){ .reader{padding:16px 15px 20px} .reader p{line-height:1.8} }
+
 footer{margin-top:52px; border-top:1px solid var(--line); padding:20px 0 40px; color:var(--faint); font-size:11.5px}
 footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap}
 
@@ -220,6 +242,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
     <div class="brand"><b>변리사 1차 진도판</b><span id="brandSub">2027년 1차 · 자연과학 + 민법연습장 + 특허연습장</span></div>
     <nav>
       <a href="#today">오늘</a>
+      <a href="#read">읽을 것</a>
       <a href="#progress">진도 입력</a>
       <a href="#schedule">일정</a>
       <a href="#cycles">회독</a>
@@ -255,9 +278,19 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
   </div>
 </section>
 
-<section id="progress">
+<section id="read">
   <div class="shead">
     <span class="eyebrow">01</span>
+    <h2>오늘 읽을 것</h2>
+    <p>파일을 따로 열 필요 없다. 여기서 바로 본다.</p>
+  </div>
+  <div class="tabs" id="readTabs"></div>
+  <div class="card reader" id="reader"></div>
+</section>
+
+<section id="progress">
+  <div class="shead">
+    <span class="eyebrow">02</span>
     <h2>진도 입력</h2>
     <p>여기 숫자만 고치면 아래 일정이 전부 다시 깔린다.</p>
   </div>
@@ -279,7 +312,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
 
 <section id="schedule">
   <div class="shead">
-    <span class="eyebrow">02</span>
+    <span class="eyebrow">03</span>
     <h2>일정</h2>
     <p id="schedSub"></p>
   </div>
@@ -304,7 +337,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
 
 <section id="cycles">
   <div class="shead">
-    <span class="eyebrow">03</span>
+    <span class="eyebrow">04</span>
     <h2>회독</h2>
     <p>민법연습장 3-275p · 특허연습장 2-362p — 학습일 30일(6주) 1회독</p>
   </div>
@@ -323,7 +356,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
 
 <section id="rules">
   <div class="shead">
-    <span class="eyebrow">04</span>
+    <span class="eyebrow">05</span>
     <h2>규칙</h2>
     <p>계획을 다시 짤 때 지켜야 하는 것들</p>
   </div>
@@ -340,6 +373,9 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
 
 <script>
 const INV = /*INVENTORY*/;
+const TRACE_BODY = /*TRACE_BODY*/;
+const CHEM_SHEET = /*CHEM_SHEET*/;
+const CHEM_MAP = /*CHEM_MAP*/;
 
 /* ---------------- 기본 설정 ---------------- */
 const SETTINGS_VERSION = 7;   // 교재·속도·기간이 바뀌면 올린다
@@ -575,7 +611,7 @@ function renderToday(){
         const t=TRACE[i];
         return {id:"wr", lbl:"판례 필사",
           val: t ? `${i+1}회차 · 사례 ${t[0]}` : "필사장 소진 — 다음 회차 요청",
-          sub: t ? `${t[1]} · 10항목` : "민소_판례_필사장.md 에 추가 필요",
+          sub: t ? `${t[1]} · 아래 «읽을 것»에 전문` : "다음 회차를 만들어 달라고 하면 된다",
           min:S.settings.writeMin};
       })()
     ].filter(Boolean);
@@ -661,6 +697,29 @@ function renderCyc(){
     `회독 ${S.settings.cycleDays}학습일(6주) 주기. 회독1은 ${md(parse(st.cycle1End))}에 끝나고, 그 다음 날부터 처음 쪽으로 되돌아간다. 해설이 빠진 판이라 페이지당 문제가 훨씬 많다 — 쪽수는 적어도 걸리는 시간은 옛 교재와 같다.`;
 }
 
+let readScope="trace";
+function renderRead(){
+  const t=today();
+  const row=PLAN.rows.find(r=>iso(r.date)===iso(t));
+  const ti=S.progress.traceDone||0;
+  const round=TRACE_BODY.find(x=>x.n===ti+1);
+  // 오늘 들을 화학 강의에서 단원을 뽑는다
+  const chems=[...new Set((row?row.lec:[]).filter(l=>l.courseId==="chemPast")
+    .map(l=>CHEM_MAP[parseInt(l.name)]).filter(Boolean))];
+  const tabs=[{k:"trace", n:round?`판례 필사 ${round.n}회차`:"판례 필사"}];
+  for(const c of chems) if(CHEM_SHEET[c]) tabs.push({k:"chem"+c, n:CHEM_SHEET[c].title});
+  document.getElementById("readTabs").innerHTML=tabs.map(x=>
+    `<button data-r="${x.k}" aria-selected="${readScope===x.k}">${x.n}</button>`).join("");
+  if(!tabs.some(x=>x.k===readScope)) readScope=tabs[0].k;
+  const box=document.getElementById("reader");
+  if(readScope==="trace"){
+    if(!round){ box.innerHTML='<p class="rmiss">필사장이 '+TRACE_BODY.length+'회차까지만 작성돼 있다. 다음 회차를 만들어 달라고 하면 된다.</p>'; return; }
+    box.innerHTML=`<div class="rhead"><b>${round.n}회차</b><span>${round.title}</span><span style="margin-left:auto">10항목 · 15분</span></div>`+round.html;
+  } else {
+    const c=CHEM_SHEET[readScope.slice(4)];
+    box.innerHTML=`<div class="rhead"><b>${c.title}</b><span>강의 직전 5분</span></div>`+c.html;
+  }
+}
 const RULES=[
   {t:"교재", items:[
     "민법 = <b>민법연습장</b> (구 민공연 오엑스워크북) · <b>3p-275p</b>",
@@ -731,7 +790,7 @@ function renderInputs(){
 }
 
 function renderAll(){
-  build(); renderToday(); renderSched(); renderCyc();
+  build(); renderToday(); renderSched(); renderCyc(); renderRead();
   document.getElementById("schedTabs").innerHTML=
     ['all','9','10','11','12'].map(s=>`<button data-s="${s}" aria-selected="${schedScope===s}">${s==='all'?'전체':s+'월'}</button>`).join("");
   const at=S.updatedAt||PUBLISHED.at;
@@ -747,6 +806,8 @@ document.addEventListener("click",e=>{
     document.querySelectorAll("#schedTabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.s===schedScope)); return; }
   const ct=e.target.closest("#cycTabs button");
   if(ct){ cycScope=ct.dataset.c; renderCyc(); return; }
+  const rt=e.target.closest("#readTabs button");
+  if(rt){ readScope=rt.dataset.r; renderRead(); return; }
 });
 // 체크하면 그 즉시 진도가 올라간다. 체크를 풀면 되돌아간다.
 function applyChecks(){
