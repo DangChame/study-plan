@@ -210,6 +210,24 @@ tr.now td.d{color:var(--accent)}
 .rule li b{color:var(--ink)}
 .rule.warn h3 .dot{background:var(--warn)}
 
+/* ---------- roadmap ---------- */
+table.road{min-width:820px}
+table.road th:first-child,table.road td:first-child{
+  position:sticky; left:0; background:var(--card); z-index:2; font-weight:600;
+  border-right:1px solid var(--line); min-width:104px}
+table.road thead th:first-child{background:var(--card2); z-index:6}
+table.road td{font-size:12px; line-height:1.55; vertical-align:top}
+table.road td.m{white-space:normal; min-width:150px}
+table.road .h{display:block; font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+  font-weight:600; color:var(--faint); margin-top:3px}
+table.road tr.now td{background:var(--accentSoft)}
+table.road tr.now td:first-child{background:var(--accentSoft)}
+table.road th.now{background:var(--accentSoft); color:var(--accent)}
+table.road tr.sum td{border-top:1px solid var(--line); font-weight:600; background:var(--card2)}
+table.road tr.sum td:first-child{background:var(--card2)}
+.roadTag{display:inline-block; font-size:10px; font-weight:600; padding:1px 5px;
+  border-radius:4px; background:var(--goodSoft); color:var(--good); margin-left:4px}
+
 /* ---------- reader ---------- */
 .reader{padding:20px 24px 24px; max-width:none}
 .reader .rhead{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid var(--line)}
@@ -256,6 +274,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
     <nav>
       <a href="#today">오늘</a>
       <a href="#read">읽을 것</a>
+      <a href="#road">골격</a>
       <a href="#progress">진도 입력</a>
       <a href="#schedule">일정</a>
       <a href="#cycles">회독</a>
@@ -301,9 +320,21 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
   <div class="card reader" id="reader"></div>
 </section>
 
-<section id="progress">
+<section id="road">
   <div class="shead">
     <span class="eyebrow">02</span>
+    <h2>시험까지 골격</h2>
+    <p>9/30 → 2/19 · 학습일 103일 · 519시간 · 하루 5.2시간</p>
+  </div>
+  <div class="tblwrap">
+    <table class="road"><thead><tr id="roadHead"></tr></thead><tbody id="roadBody"></tbody></table>
+  </div>
+  <div class="cyc" style="margin-top:14px" id="roadCards"></div>
+</section>
+
+<section id="progress">
+  <div class="shead">
+    <span class="eyebrow">03</span>
     <h2>진도 입력</h2>
     <p>여기 숫자만 고치면 아래 일정이 전부 다시 깔린다.</p>
   </div>
@@ -325,7 +356,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
 
 <section id="schedule">
   <div class="shead">
-    <span class="eyebrow">03</span>
+    <span class="eyebrow">04</span>
     <h2>일정</h2>
     <p id="schedSub"></p>
   </div>
@@ -350,7 +381,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
 
 <section id="cycles">
   <div class="shead">
-    <span class="eyebrow">04</span>
+    <span class="eyebrow">05</span>
     <h2>회독</h2>
     <p>민법연습장 3-275p · 특허연습장 2-362p — 학습일 30일(6주) 1회독</p>
   </div>
@@ -369,7 +400,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
 
 <section id="rules">
   <div class="shead">
-    <span class="eyebrow">05</span>
+    <span class="eyebrow">06</span>
     <h2>규칙</h2>
     <p>계획을 다시 짤 때 지켜야 하는 것들</p>
   </div>
@@ -394,7 +425,7 @@ const CHEM_MAP = {"1":"1","2":"2","3":"2","4":"3","5":"3","6":"3","7":"4","8":"5
 const SETTINGS_VERSION = 7;   // 교재·속도·기간이 바뀌면 올린다
 // 배포 시점의 진도. Claude가 재산출할 때마다 갱신된다.
 // 주소창에 그냥 dangchame.github.io/study-plan 만 쳐도 이 값이 기본이 된다.
-const PUBLISHED = { at: "2026-09-25T15:23:38+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":55,"ptPage":105,"traceDone":1} };
+const PUBLISHED = { at: "2026-09-29T17:30:56+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":55,"ptPage":105,"traceDone":1} };
 const DEFAULTS = {
   progress:{ chemPast:2, phyIntro:4, phyBase:0, phyPast1:0, phyPast2:0, chemMC:0, chemFin:0,
              bioBase:0, bioPast:0, bioMC:0, bioFin:0, earthBase:0, earthMC:0,
@@ -710,6 +741,48 @@ function renderCyc(){
     `회독 ${S.settings.cycleDays}학습일(6주) 주기. 회독1은 ${md(parse(st.cycle1End))}에 끝나고, 그 다음 날부터 처음 쪽으로 되돌아간다. 해설이 빠진 판이라 페이지당 문제가 훨씬 많다 — 쪽수는 적어도 걸리는 시간은 옛 교재와 같다.`;
 }
 
+const ROADMAP={
+  months:[["10월",23],["11월",21],["12월",23],["1월",21],["2월",15]],
+  rows:[
+   ["민법",      [["연습장 1회독",25],["1회독 완료 · 2회독",25],["2회독 완료 · 3회독",30],["3회독 완료",25],["4·5회독 오답만",5]],111],
+   ["특허법",    [["연습장 1회독",12],["2회독",12],["3회독",18],["3회독 완료",14],["4·5회독 오답만",3]],59],
+   ["상표법",    [["연습장 1회독",6],["1회독 완료 · 2회독",6],["3회독",8],["4회독",6],["5회독 오답만",2]],28],
+   ["디보법",    [["",0],["문제집 1회독",5],["1회독 완료",8],["2회독",10],["",0]],23],
+   ["10개년 기출",[["",0],["",0],["",0],["1회독 착수",9],["1회독 완료 · 2회독",29]],38],
+   ["물리",      [["강의 입문 완강 → 기본 착수",20],["강의 기본 완료 → 기출 1·2단계 완결",54],["문제집 2회독",30],["문제집 3회독",22],["",0]],126],
+   ["화학",      [["강의 기출 → 객관식 → 최종 완결",48],["문제집",2],["문제집 2회독",25],["문제집 3회독",25],["",0]],100],
+   ["생물",      [["",0],["",0],["최종정리 15강",7],["",0],["",0]],7],
+   ["지구과학",  [["",0],["강의 기본 23 + 문풀 10 완결",23],["",0],["",0],["",0]],23]
+  ],
+  goal:[["민법","95","95 유지"],["산재법","85","90"],["자연과학","55","75"],["평균","78.3","86.7"]]
+};
+function renderRoad(){
+  const t=today(), cm=(t.getFullYear()===2027? t.getMonth()+1+12 : t.getMonth()+1);
+  const idx=ROADMAP.months.findIndex(([m])=>{
+    const n=parseInt(m); return (n>=10? n : n+12)===cm;
+  });
+  document.getElementById("roadHead").innerHTML='<th>과목</th>'+
+    ROADMAP.months.map(([m,d],i)=>`<th class="${i===idx?'now':''}">${m}<span class="h">${d}일</span></th>`).join('')+'<th class="num">계</th>';
+  const sums=ROADMAP.months.map(()=>0);
+  const body=ROADMAP.rows.map(([nm,cells,tot])=>{
+    const tds=cells.map(([txt,h],i)=>{ sums[i]+=h;
+      return `<td class="m">${txt||'·'}${h?`<span class="h">${h}h</span>`:''}</td>`; }).join('');
+    return `<tr><td>${nm}</td>${tds}<td class="num">${tot}h</td></tr>`;
+  }).join('');
+  const days=ROADMAP.months.map(([,d])=>d);
+  const sum=`<tr class="sum"><td>월 합계</td>`+sums.map((v,i)=>
+    `<td class="num">${v}h<span class="h">하루 ${(v/days[i]).toFixed(1)}h</span></td>`).join('')+
+    `<td class="num">${sums.reduce((a,b)=>a+b,0)}h</td></tr>`;
+  document.getElementById("roadBody").innerHTML=body+sum;
+  document.getElementById("roadCards").innerHTML=`
+    <div class="card cycCard"><div class="cycTop"><h3>목표 점수</h3></div>
+      ${ROADMAP.goal.map(([k,a,b])=>`<div class="mrow"><span>${k}</span><b>${a} → ${b}</b></div>`).join('')}</div>
+    <div class="card cycCard"><div class="cycTop"><h3>완결 시점</h3></div>
+      <div class="mrow"><span>화학 강의 전량</span><b>10월 말</b></div>
+      <div class="mrow"><span>자연과학 강의 전량</span><b>11월 말</b></div>
+      <div class="mrow"><span>전 과목 3회독</span><b>1월</b></div>
+      <div class="mrow"><span>기출 2회독 마무리</span><b>2월</b></div></div>`;
+}
 let readScope="trace";
 function renderRead(){
   const t=today();
@@ -803,7 +876,7 @@ function renderInputs(){
 }
 
 function renderAll(){
-  build(); renderToday(); renderSched(); renderCyc(); renderRead();
+  build(); renderToday(); renderSched(); renderCyc(); renderRead(); renderRoad();
   document.getElementById("schedTabs").innerHTML=
     ['all','9','10','11','12'].map(s=>`<button data-s="${s}" aria-selected="${schedScope===s}">${s==='all'?'전체':s+'월'}</button>`).join("");
   const at=S.updatedAt||PUBLISHED.at;
