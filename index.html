@@ -365,7 +365,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
     <table>
       <thead><tr>
         <th>날짜</th><th>자연과학 강의</th><th class="num">강</th><th class="num">강의+예습</th>
-        <th>민법연습장</th><th>특허연습장</th><th class="num">필사</th><th class="num">하루 총합</th>
+        <th>민법</th><th>특허</th><th>상표</th><th>디보</th><th>비고</th><th class="num">총합</th>
       </tr></thead>
       <tbody id="schedBody"></tbody>
     </table>
@@ -383,7 +383,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
   <div class="shead">
     <span class="eyebrow">05</span>
     <h2>회독</h2>
-    <p>민법연습장 3-275p · 특허연습장 2-362p — 학습일 30일(6주) 1회독</p>
+    <p>4과목 · 3회독까지 전문항, 4·5회독은 오답만</p>
   </div>
   <div class="cyc" id="cycCards"></div>
   <div class="tabs" id="cycTabs"></div>
@@ -422,23 +422,37 @@ const CHEM_SHEET = {"2":{"title":"2장 · 원자구조와 주기성","html":"<h4
 const CHEM_MAP = {"1":"1","2":"2","3":"2","4":"3","5":"3","6":"3","7":"4","8":"5","9":"6","10":"6","11":"7","12":"7","13":"7","14":"8","15":"8","16":"8","17":"8","18":"9","19":"9","20":"10","21":"10","22":"11","23":"11","24":"12","25":"12"};
 
 /* ---------------- 기본 설정 ---------------- */
-const SETTINGS_VERSION = 7;   // 교재·속도·기간이 바뀌면 올린다
+const SETTINGS_VERSION = 8;   // 교재·속도·기간이 바뀌면 올린다
 // 배포 시점의 진도. Claude가 재산출할 때마다 갱신된다.
 // 주소창에 그냥 dangchame.github.io/study-plan 만 쳐도 이 값이 기본이 된다.
-const PUBLISHED = { at: "2026-09-29T17:30:56+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":55,"ptPage":105,"traceDone":1} };
+const PUBLISHED = { at: "2026-09-29T20:03:02+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":55,"ptPage":105,"traceDone":1,"stPage":0,"dsPage":0} };
 const DEFAULTS = {
   progress:{ chemPast:2, phyIntro:4, phyBase:0, phyPast1:0, phyPast2:0, chemMC:0, chemFin:0,
              bioBase:0, bioPast:0, bioMC:0, bioFin:0, earthBase:0, earthMC:0,
-             mgPage:55, ptPage:94, traceDone:1 },
+             mgPage:55, ptPage:105, stPage:0, dsPage:0, traceDone:1 },
   settings:{
-    rampStart:"2026-09-24",
-    capRamp:[260,275,300,330,350], // 주차별 하루 총 순공 목표(분). 이후 마지막 값 유지
-    dayCap:{ "2026-09-24":420, "2026-09-28":420, "2026-09-29":420, "2026-09-30":420, "2026-10-01":420, "2026-10-02":420, "2026-10-05":420, "2026-10-06":420, "2026-10-07":420, "2026-10-08":420, "2026-10-09":420, "2026-10-12":420, "2026-10-13":420, "2026-10-14":420, "2026-10-15":420, "2026-10-16":420, "2026-10-19":390, "2026-10-20":390, "2026-10-21":390, "2026-10-23":390 },
-    offDays:["2026-09-25","2026-10-22","2026-10-24","2026-10-25","2026-10-26","2026-10-27"],
-    mgSpeed:6, ptSpeed:15,         // p/h — 보수적으로 잡은 값 (2026-09-09 사용자 지정)
-    mgStart:3, mgEnd:275, ptStart:2, ptEnd:362,
-    mgName:"민법연습장", ptName:"특허연습장",
-    cycle1End:"2026-10-16", cycleDays:30,
+    rampStart:"2026-09-30",
+    capRamp:[330],
+    dayCap:{ "2026-09-29":0,
+      "2026-09-30":330, "2026-10-01":330, "2026-10-02":330, "2026-10-03":330,
+      "2026-10-05":165, "2026-10-06":165, "2026-10-07":330, "2026-10-08":330,
+      "2026-10-12":165, "2026-10-13":165, "2026-10-14":330, "2026-10-15":330,
+      "2026-10-16":210, "2026-10-17":150, "2026-10-18":150, "2026-10-19":165,
+      "2026-10-20":330, "2026-10-21":330, "2026-10-22":210, "2026-10-23":330,
+      "2026-10-28":330, "2026-10-29":330, "2026-10-30":330, "2026-10-31":330 },
+    dayNote:{ "2026-10-03":"주말 보충", "2026-10-05":"개인 일정", "2026-10-06":"개인 일정",
+      "2026-10-12":"개인 일정", "2026-10-13":"개인 일정", "2026-10-16":"개인 일정",
+      "2026-10-17":"개인 일정", "2026-10-18":"개인 일정", "2026-10-19":"개인 일정",
+      "2026-10-22":"개인 일정", "2026-10-31":"주말 보충" },
+    offDays:["2026-09-29","2026-10-09","2026-10-10","2026-10-11",
+             "2026-10-24","2026-10-25","2026-10-26","2026-10-27"],
+    books:[
+      {k:"mg", name:"민법연습장",   start:3, end:275, speed:6,  end1:"2026-11-13", w:0.45},
+      {k:"pt", name:"특허연습장",   start:2, end:362, speed:15, end1:"2026-11-06", w:0.27},
+      {k:"st", name:"상표연습장",   start:1, end:68,  speed:6,  end1:"2026-11-20", w:0.16},
+      {k:"ds", name:"디보법 문제집", start:1, end:200, speed:15, end1:"2026-12-18", w:0.12, from:"2026-11-02"}
+    ],
+    cycleDays:30,
     writeMin:15,
     holidays:[], useHolidays:false
   },
@@ -538,28 +552,35 @@ function capacity(d){
 
 /* ---------------- 회독 배분 ---------------- */
 function alloc(days, total, startPage, speed, cycle){
-  // 가용시간에 비례해 쪽수를 나눈다 (긴 날이 더 많이 가져간다)
   const w=days.map(capacity), sum=w.reduce((a,b)=>a+b,0);
   const out=[]; let p=startPage, given=0;
   days.forEach((d,i)=>{
-    const isLast=i===days.length-1;
-    let c=isLast ? total-given : Math.round(total*w[i]/sum);
-    if(c<0) c=0;
-    given+=c;
+    let c = (i===days.length-1) ? total-given : Math.round(total*w[i]/sum);
+    if(c<0) c=0; given+=c;
     out.push({date:d, a:p, b:p+c-1, n:c, min:c/speed*60, cycle});
     p+=c;
   });
   return out.filter(x=>x.n>0);
 }
-function cycleSlices(startDate, curPage, endDate, startPage, endPage, speed){
+// 책 하나의 회독 일정. 1회독은 지정된 완료일까지, 이후는 cycleDays 주기.
+function bookSlices(book, from){
+  const st=S.settings, cur=S.progress[book.k+"Page"]||0;
   const out=[];
-  const d1=studyDaysUntil(startDate,endDate);
-  if(d1.length && curPage<endPage) out.push(...alloc(d1, endPage-curPage, curPage+1, speed, 1));
-  let cur=addD(endDate,1), cyc=2;
+  const begin = book.from ? new Date(Math.max(parse(book.from), from)) : from;
+  const e1=parse(book.end1);
+  if(e1>=begin){
+    const d1=studyDaysUntil(begin,e1);
+    const left=book.end-Math.max(cur, book.start-1);
+    if(d1.length && left>0) out.push(...alloc(d1, left, Math.max(cur,book.start-1)+1, book.speed, 1));
+  }
+  let cur2=addD(e1,1), cyc=2;
   while(cyc<=5){
-    const ds=studyDays(cur,S.settings.cycleDays);
-    out.push(...alloc(ds, endPage-startPage+1, startPage, speed, cyc));
-    cur=addD(ds[ds.length-1],1); cyc++;
+    const ds=studyDays(cur2, st.cycleDays);
+    // 4·5회독은 오답만 — 분량이 확 준다
+    const frac = cyc<=3 ? 1 : (cyc===4 ? 0.15 : 0.08);
+    const sp = book.speed*(1+0.35*(cyc-1));
+    out.push(...alloc(ds, Math.round((book.end-book.start+1)*frac), book.start, sp, cyc));
+    cur2=addD(ds[ds.length-1],1); cyc++;
   }
   return out;
 }
@@ -571,19 +592,19 @@ function build(){
   const start = t < parse(st.rampStart) ? parse(st.rampStart) : t;
   const q=lectureQueue();
   const days=studyDays(start,170);
-  const B=basis();
-  const mg=cycleSlices(start,B.mgPage,parse(st.cycle1End),st.mgStart,st.mgEnd,st.mgSpeed);
-  const pt=cycleSlices(start,B.ptPage,parse(st.cycle1End),st.ptStart,st.ptEnd,st.ptSpeed);
-  const byDate=a=>{ const m={}; a.forEach(x=>m[iso(x.date)]=x); return m; };
-  const MG=byDate(mg), PT=byDate(pt);
-
+  const BK={};
+  for(const b of st.books){
+    const m={}; for(const x of bookSlices(b,start)) m[iso(x.date)]=x;
+    BK[b.k]=m;
+  }
   let i=0; const rows=[];
   for(const d of days){
-    const m=MG[iso(d)], p=PT[iso(d)];
-    if(i>=q.length && !m && !p) break;
+    const key=iso(d);
+    const books=st.books.map(b=>({b, s:BK[b.k][key]})).filter(x=>x.s);
+    if(i>=q.length && !books.length) break;
     const cap=capacity(d);
-    const fixed=st.writeMin;
-    const budget=Math.max(0, cap - (m?m.min:0) - (p?p.min:0) - fixed);
+    const revMin=books.reduce((a,x)=>a+x.s.min,0);
+    const budget=Math.max(0, cap - revMin - st.writeMin);
     let acc=0; const got=[];
     while(i<q.length && budget>0){
       const c=q[i].cost;
@@ -591,10 +612,10 @@ function build(){
       got.push(q[i]); acc+=c; i++;
       if(acc >= budget*0.9) break;
     }
-    rows.push({date:d, cap, lec:got, lecMin:acc, mg:m, pt:p,
-               total:acc+(m?m.min:0)+(p?p.min:0)+fixed});
+    rows.push({date:d, cap, lec:got, lecMin:acc, books,
+               total:acc+revMin+st.writeMin, note:st.dayNote[key]||""});
   }
-  PLAN={rows, queue:q, mg, pt};
+  PLAN={rows, queue:q, BK};
   return PLAN;
 }
 
@@ -643,13 +664,13 @@ function renderToday(){
     document.getElementById("tTotal").textContent="—";
     document.getElementById("tTotalSub").textContent="쉬는 날";
   }else{
-    const full=row.cap>=400, light=row.cap<=200;
-    tag.textContent = full ? "전업 공부일" : light ? "가벼운 날 · "+fm(row.cap) : "학습일";
-    tag.className = full ? "tag full" : light ? "tag rest" : "tag";
+    const light=row.cap<330;
+    tag.textContent = row.note ? row.note+" · "+fm(row.cap) : light ? "가벼운 날 · "+fm(row.cap) : "학습일";
+    tag.className = light ? "tag rest" : "tag";
     const items=[
       {id:"sci", lbl:"자연과학", val:lecLabel(row.lec), sub:row.lec.length+"강 · 예습 "+fm(row.lec.reduce((a,b)=>a+b.prep,0))+" + 강의 "+fm(row.lec.reduce((a,b)=>a+b.min,0)), min:row.lecMin},
-      row.mg&&{id:"mg", lbl:S.settings.mgName, val:row.mg.a+" - "+row.mg.b+"p", sub:row.mg.n+"p · "+S.settings.mgSpeed+"p/h (환산)", min:row.mg.min},
-      row.pt&&{id:"pt", lbl:S.settings.ptName, val:row.pt.a+" - "+row.pt.b+"p", sub:row.pt.n+"p · "+S.settings.ptSpeed+"p/h (미측정)", min:row.pt.min},
+      ...row.books.map(x=>({id:x.b.k, lbl:x.b.name, val:x.s.a+" - "+x.s.b+"p",
+        sub:x.s.n+"p · "+(x.s.cycle>1?`${x.s.cycle}회독`+(x.s.cycle>3?" 오답만":""):"1회독"), min:x.s.min})),
       (function(){
         const i=S.progress.traceDone||0;
         const t=TRACE[i];
@@ -688,16 +709,15 @@ function renderSched(){
   body.innerHTML=rows.map(r=>{
     const cls=[]; if(iso(r.date)===iso(t)) cls.push("now"); else if(r.date<t) cls.push("past");
     if(r.date.getDay()===1) cls.push("wkstart");
-    const tot=r.cap>=400?`<span class="pill g">${fm(r.total)}</span>`
-             :r.cap<=200?`<span class="pill w">${fm(r.total)}</span>`:fm(r.total);
+    const tot=r.cap>=330?fm(r.total):`<span class="pill w">${fm(r.total)}</span>`;
     return `<tr class="${cls.join(" ")}">
       <td class="d">${md(r.date)}<span class="wd">${WD[r.date.getDay()]}</span></td>
       <td>${lecLabel(r.lec)}</td>
       <td class="num">${r.lec.length||""}</td>
       <td class="num">${r.lecMin?fm(r.lecMin):"—"}</td>
-      <td class="num">${r.mg?r.mg.a+"-"+r.mg.b+"p":"—"}</td>
-      <td class="num">${r.pt?r.pt.a+"-"+r.pt.b+"p":"—"}</td>
-      <td class="num">15분</td>
+      ${["mg","pt","st","ds"].map(k=>{const x=r.books.find(b=>b.b.k===k);
+        return `<td class="num">${x?x.s.a+"-"+x.s.b+"p":"—"}</td>`;}).join("")}
+      <td class="est">${r.note||""}</td>
       <td class="num">${tot}</td></tr>`;
   }).join("");
   const over=rows.filter(r=>r.total>420).length;
@@ -709,10 +729,9 @@ function renderSched(){
 let cycScope="mg";
 function renderCyc(){
   const st=S.settings, t=today();
-  const specs=[
-    {k:"mg", nm:st.mgName, cur:S.progress.mgPage, end:st.mgEnd, start:st.mgStart, sp:st.mgSpeed, arr:PLAN.mg},
-    {k:"pt", nm:st.ptName, cur:S.progress.ptPage, end:st.ptEnd, start:st.ptStart, sp:st.ptSpeed, arr:PLAN.pt}
-  ];
+  const specs=st.books.map(b=>({k:b.k, nm:b.name, cur:S.progress[b.k+"Page"]||0,
+    end:b.end, start:b.start, sp:b.speed, end1:b.end1,
+    arr:Object.values(PLAN.BK[b.k]).sort((x,y)=>x.date-y.date)}));
   document.getElementById("cycCards").innerHTML=specs.map(s=>{
     const pct=Math.round(s.cur/s.end*100);
     const c1=s.arr.filter(x=>x.cycle===1);
@@ -721,7 +740,7 @@ function renderCyc(){
       <div class="cycTop"><h3>${s.nm} <span class="rng mono">${s.start}-${s.end}p</span></h3><span class="pg mono">${s.cur}p · ${pct}%</span></div>
       <div class="bar"><i style="width:${pct}%"></i></div>
       <div class="cycMeta"><span>하루 <b>${per}p</b></span><span>소요 <b>${fm(per/s.sp*60)}</b></span>
-      <span>회독1 완료 <b>${md(parse(st.cycle1End))}</b></span></div></div>`;
+      <span>1회독 완료 <b>${md(parse(s.end1))}</b></span></div></div>`;
   }).join("");
   document.getElementById("cycTabs").innerHTML=specs.map(s=>
     `<button data-c="${s.k}" aria-selected="${cycScope===s.k}">${s.nm}</button>`).join("");
@@ -738,7 +757,7 @@ function renderCyc(){
       <td class="num">${Math.round(x.b/spec.end*100)}%</td></tr>`;
   }).join("");
   document.getElementById("cycHint").textContent =
-    `회독 ${S.settings.cycleDays}학습일(6주) 주기. 회독1은 ${md(parse(st.cycle1End))}에 끝나고, 그 다음 날부터 처음 쪽으로 되돌아간다. 해설이 빠진 판이라 페이지당 문제가 훨씬 많다 — 쪽수는 적어도 걸리는 시간은 옛 교재와 같다.`;
+    `1회독은 과목별 목표일까지 끝내고, 이후 ${S.settings.cycleDays}학습일 주기로 돈다. **3회독까지 전문항, 4·5회독은 오답만**(15% → 8% 가정). 해설이 빠진 연습장이라 쪽수는 적어도 페이지당 문제가 많다.`;
 }
 
 const ROADMAP={
@@ -854,6 +873,8 @@ const FIELDS=[
   {k:"chemMC", l:"화학 객관식", u:"강"},
   {k:"mgPage", l:"민법연습장", u:"p까지"},
   {k:"ptPage", l:"특허연습장", u:"p까지"},
+  {k:"stPage", l:"상표연습장", u:"p까지"},
+  {k:"dsPage", l:"디보법 문제집", u:"p까지"},
   {k:"traceDone", l:"판례 필사", u:"회차까지"}
 ];
 const DATEFLD={k:"rampStart", l:"증량 시작일", hint:"실적이 안 따라오면 이 날짜를 뒤로 미루면 된다"};
@@ -863,9 +884,9 @@ function renderInputs(){
     const st=S.settings;
     let of;
     if(c) of=`전체 ${c.count}강`;
-    else if(f.k==="ptPage") of=`${st.ptStart}-${st.ptEnd}p`;
+    else if(f.k.endsWith("Page")){ const b=st.books.find(x=>x.k===f.k.slice(0,-4)); of=b?`${b.start}-${b.end}p`:""; }
     else if(f.k==="traceDone") of=`전체 ${TRACE.length}회차 작성됨`;
-    else of=`${st.mgStart}-${st.mgEnd}p`;
+    else of="";
     return `<div class="fld"><label for="f_${f.k}">${f.l}</label>
       <div class="row"><input type="number" id="f_${f.k}" min="0" value="${S.progress[f.k]}"><span class="unit">${f.u}</span></div>
       <div class="of">${of}</div></div>`;
@@ -905,8 +926,7 @@ function applyChecks(){
   const ck=S.checks[key]||{};
   if(row){                                   // 체크된 것만 전진시킨다
     if(ck.sci) row.lec.forEach(l=>{ S.progress[l.courseId]=(S.progress[l.courseId]||0)+1; });
-    if(ck.mg && row.mg) S.progress.mgPage=row.mg.b;
-    if(ck.pt && row.pt) S.progress.ptPage=row.pt.b;
+    for(const x of row.books) if(ck[x.b.k]) S.progress[x.b.k+"Page"]=x.s.b;
     if(ck.wr) S.progress.traceDone=Math.min((base.traceDone||0)+1, TRACE.length);
   }
   S.updatedAt=stamp(); SOURCE="내가 입력";
@@ -1001,8 +1021,8 @@ const HASH=readHash();
 // 구 교재 기준으로 저장된 페이지 값이 남아 있으면 되돌린다
 (function clampPages(){
   const st=S.settings;
-  if(S.progress.mgPage>st.mgEnd || S.progress.mgPage<0) S.progress.mgPage=DEFAULTS.progress.mgPage;
-  if(S.progress.ptPage>st.ptEnd || S.progress.ptPage<0) S.progress.ptPage=DEFAULTS.progress.ptPage;
+  for(const b of st.books){ const k=b.k+"Page";
+    if(S.progress[k]>b.end || S.progress[k]<0) S.progress[k]=DEFAULTS.progress[k]; }
 })();
 renderInputs(); renderRules(); renderAll(); pushHash();
 
