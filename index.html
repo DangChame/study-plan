@@ -159,7 +159,7 @@ button.pri:hover{filter:brightness(1.1); color:var(--onAccent)}
 table{border-collapse:collapse; width:100%; min-width:660px}
 th,td{padding:9px 12px; text-align:left; border-top:1px solid var(--line2); font-size:13px; vertical-align:top}
 thead th{
-  position:sticky; top:56px; z-index:5; background:var(--card2); border-top:0; border-bottom:1px solid var(--line);
+  background:var(--card2); border-top:0; border-bottom:1px solid var(--line);
   font-size:10.5px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:var(--faint);
   font-family:"IBM Plex Mono",monospace; white-space:nowrap;
 }
@@ -212,7 +212,6 @@ tr.now td.d{color:var(--accent)}
 
 /* ---------- roadmap ---------- */
 table.road{min-width:820px}
-table.road thead th{position:static; top:auto}
 table.road th:first-child,table.road td:first-child{
   position:sticky; left:0; background:var(--card); z-index:1; font-weight:600;
   border-right:1px solid var(--line); min-width:104px}
@@ -260,7 +259,6 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
   .today{grid-template-columns:1fr}
   .todaySide{flex-direction:row; flex-wrap:wrap}
   .todaySide>*{flex:1 1 190px}
-  thead th{top:0}
   .brand span{display:none}
   nav a{padding:6px 8px}
 }
@@ -426,7 +424,7 @@ const CHEM_MAP = {"1":"1","2":"2","3":"2","4":"3","5":"3","6":"3","7":"4","8":"5
 const SETTINGS_VERSION = 8;   // 교재·속도·기간이 바뀌면 올린다
 // 배포 시점의 진도. Claude가 재산출할 때마다 갱신된다.
 // 주소창에 그냥 dangchame.github.io/study-plan 만 쳐도 이 값이 기본이 된다.
-const PUBLISHED = { at: "2026-09-30T14:54:07+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":55,"ptPage":105,"traceDone":1,"stPage":0,"dsPage":0} };
+const PUBLISHED = { at: "2026-09-30T14:56:11+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":55,"ptPage":105,"traceDone":1,"stPage":0,"dsPage":0} };
 const DEFAULTS = {
   progress:{ chemPast:2, phyIntro:4, phyBase:0, phyPast1:0, phyPast2:0, chemMC:0, chemFin:0,
              bioBase:0, bioPast:0, bioMC:0, bioFin:0, earthBase:0, earthMC:0,
