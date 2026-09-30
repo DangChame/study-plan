@@ -497,13 +497,14 @@ const md = d => (d.getMonth()+1)+"/"+d.getDate();
 function today(){ const n=new Date(); return new Date(n.getFullYear(),n.getMonth(),n.getDate()); }
 function isStudyDay(d){ return capacity(d)>0; }
 function studyDays(from,count){
-  const out=[]; let c=new Date(from);
-  while(out.length<count){ if(isStudyDay(c)) out.push(new Date(c)); c=addD(c,1); }
+  // 시험 이후엔 가용이 0이라 count를 영영 못 채운다 → 반드시 상한을 둔다
+  const out=[]; let c=new Date(from); const stop=addD(parse(EXAM),1);
+  while(out.length<count && c<stop){ if(isStudyDay(c)) out.push(new Date(c)); c=addD(c,1); }
   return out;
 }
 function studyDaysUntil(from,to){
-  const out=[]; let c=new Date(from);
-  while(c<=to){ if(isStudyDay(c)) out.push(new Date(c)); c=addD(c,1); }
+  const out=[]; let c=new Date(from); let guard=0;
+  while(c<=to && guard++<800){ if(isStudyDay(c)) out.push(new Date(c)); c=addD(c,1); }
   return out;
 }
 function fm(min){
@@ -570,7 +571,7 @@ function bookSlices(book, from){
   }
   let cur2=addD(e1,1), cyc=2;
   while(cyc<=5 && cur2<=parse(EXAM)){
-    const ds=studyDays(cur2, st.cycleDays).filter(d=>d<=parse(EXAM));
+    const ds=studyDays(cur2, st.cycleDays);
     if(!ds.length) break;
     // 4·5회독은 오답만 — 분량이 확 준다
     const frac = cyc<=3 ? 1 : (cyc===4 ? 0.15 : 0.08);

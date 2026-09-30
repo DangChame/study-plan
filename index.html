@@ -424,7 +424,7 @@ const CHEM_MAP = {"1":"1","2":"2","3":"2","4":"3","5":"3","6":"3","7":"4","8":"5
 const SETTINGS_VERSION = 8;   // 교재·속도·기간이 바뀌면 올린다
 // 배포 시점의 진도. Claude가 재산출할 때마다 갱신된다.
 // 주소창에 그냥 dangchame.github.io/study-plan 만 쳐도 이 값이 기본이 된다.
-const PUBLISHED = { at: "2026-09-30T14:59:56+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":55,"ptPage":105,"traceDone":1,"stPage":0,"dsPage":0} };
+const PUBLISHED = { at: "2026-09-30T15:32:26+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":55,"ptPage":105,"traceDone":1,"stPage":0,"dsPage":0} };
 const DEFAULTS = {
   progress:{ chemPast:2, phyIntro:4, phyBase:0, phyPast1:0, phyPast2:0, chemMC:0, chemFin:0,
              bioBase:0, bioPast:0, bioMC:0, bioFin:0, earthBase:0, earthMC:0,
@@ -508,13 +508,14 @@ const md = d => (d.getMonth()+1)+"/"+d.getDate();
 function today(){ const n=new Date(); return new Date(n.getFullYear(),n.getMonth(),n.getDate()); }
 function isStudyDay(d){ return capacity(d)>0; }
 function studyDays(from,count){
-  const out=[]; let c=new Date(from);
-  while(out.length<count){ if(isStudyDay(c)) out.push(new Date(c)); c=addD(c,1); }
+  // 시험 이후엔 가용이 0이라 count를 영영 못 채운다 → 반드시 상한을 둔다
+  const out=[]; let c=new Date(from); const stop=addD(parse(EXAM),1);
+  while(out.length<count && c<stop){ if(isStudyDay(c)) out.push(new Date(c)); c=addD(c,1); }
   return out;
 }
 function studyDaysUntil(from,to){
-  const out=[]; let c=new Date(from);
-  while(c<=to){ if(isStudyDay(c)) out.push(new Date(c)); c=addD(c,1); }
+  const out=[]; let c=new Date(from); let guard=0;
+  while(c<=to && guard++<800){ if(isStudyDay(c)) out.push(new Date(c)); c=addD(c,1); }
   return out;
 }
 function fm(min){
@@ -581,7 +582,7 @@ function bookSlices(book, from){
   }
   let cur2=addD(e1,1), cyc=2;
   while(cyc<=5 && cur2<=parse(EXAM)){
-    const ds=studyDays(cur2, st.cycleDays).filter(d=>d<=parse(EXAM));
+    const ds=studyDays(cur2, st.cycleDays);
     if(!ds.length) break;
     // 4·5회독은 오답만 — 분량이 확 준다
     const frac = cyc<=3 ? 1 : (cyc===4 ? 0.15 : 0.08);
