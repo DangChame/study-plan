@@ -312,7 +312,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
   <div class="shead">
     <span class="eyebrow">02</span>
     <h2>시험까지 골격</h2>
-    <p>9/30 → 2/19 · 학습일 103일 · 519시간 · 하루 5.2시간</p>
+    <p>9/30 → <b>1/29</b> · 학습일 89일 · 519시간 · 2월은 비워 둔다</p>
   </div>
   <div class="tblwrap">
     <table class="road"><thead><tr id="roadHead"></tr></thead><tbody id="roadBody"></tbody></table>
@@ -353,7 +353,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
     <table>
       <thead><tr>
         <th>날짜</th><th>자연과학 강의</th><th class="num">강</th><th class="num">강의+예습</th>
-        <th>민법</th><th>특허</th><th>상표</th><th>디보</th><th>비고</th><th class="num">총합</th>
+        <th>민법</th><th>특허</th><th>상표</th><th>디보</th><th>기출</th><th>비고</th><th class="num">총합</th>
       </tr></thead>
       <tbody id="schedBody"></tbody>
     </table>
@@ -417,11 +417,11 @@ const PUBLISHED = { at: "/*PUBLISHED_AT*/", progress: /*PUBLISHED_PROGRESS*/ };
 const DEFAULTS = {
   progress:{ chemPast:2, phyIntro:4, phyBase:0, phyPast1:0, phyPast2:0, chemMC:0, chemFin:0,
              bioBase:0, bioPast:0, bioMC:0, bioFin:0, earthBase:0, earthMC:0,
-             mgPage:55, ptPage:105, stPage:0, dsPage:0, traceDone:1 },
+             mgPage:55, ptPage:105, stPage:0, dsPage:0, exPage:0, traceDone:1 },
   settings:{
     rampStart:"2026-09-30",
     capRamp:[330],
-    monthCap:{ "2026-10":330, "2026-11":360, "2026-12":330, "2027-01":320, "2027-02":160 },
+    monthCap:{ "2026-10":330, "2026-11":384, "2026-12":384, "2027-01":384 },
     dayCap:{ "2026-09-29":0,
       "2026-09-30":330, "2026-10-01":330, "2026-10-02":330, "2026-10-03":330,
       "2026-10-05":165, "2026-10-06":165, "2026-10-07":330, "2026-10-08":330,
@@ -436,10 +436,11 @@ const DEFAULTS = {
     offDays:["2026-09-29","2026-10-09","2026-10-10","2026-10-11",
              "2026-10-24","2026-10-25","2026-10-26","2026-10-27"],
     books:[
-      {k:"mg", name:"민법연습장",   start:3, end:275, speed:6,  end1:"2026-11-13", w:0.45},
+      {k:"mg", name:"민법연습장",   start:3, end:275, speed:6,  end1:"2026-11-10", w:0.45},
       {k:"pt", name:"특허연습장",   start:2, end:362, speed:15, end1:"2026-11-06", w:0.27},
-      {k:"st", name:"상표연습장",   start:1, end:68,  speed:6,  end1:"2026-11-20", w:0.16},
-      {k:"ds", name:"디보법 문제집", start:1, end:200, speed:15, end1:"2026-12-18", w:0.12, from:"2026-11-02"}
+      {k:"st", name:"상표연습장",   start:1, end:68,  speed:6,  end1:"2026-11-17", w:0.16},
+      {k:"ds", name:"디보법 문제집", start:1, end:200, speed:15, end1:"2026-12-11", w:0.12, from:"2026-11-02"},
+      {k:"ex", name:"10개년 기출", start:1, end:900, speed:40, end1:"2027-01-18", w:0.20, from:"2027-01-04", maxCycle:2, unit:"문"}
     ],
     cycleDays:30,
     writeMin:15,
@@ -453,7 +454,8 @@ const HOLIDAY_SUGGEST = [
   ["2026-10-05","대체공휴일(개천절)"],["2026-10-09","한글날"],
   ["2026-12-25","성탄절"],["2027-01-01","신정"]
 ];
-const EXAM = "2027-02-20";
+const EXAM = "2027-02-20";      // 시험일 — D-day 표시용
+const PLAN_END = "2027-01-29";  // 계획은 여기서 끝난다. 2월은 비워 둔다.
 // 판례 필사 회차 — 민소_판례_필사장.md 와 같은 순서
 const TRACE = [
   ["1-2-1","신의칙 — 소송상 권능의 실효"],
@@ -498,7 +500,7 @@ function today(){ const n=new Date(); return new Date(n.getFullYear(),n.getMonth
 function isStudyDay(d){ return capacity(d)>0; }
 function studyDays(from,count){
   // 시험 이후엔 가용이 0이라 count를 영영 못 채운다 → 반드시 상한을 둔다
-  const out=[]; let c=new Date(from); const stop=addD(parse(EXAM),1);
+  const out=[]; let c=new Date(from); const stop=addD(parse(PLAN_END),1);
   while(out.length<count && c<stop){ if(isStudyDay(c)) out.push(new Date(c)); c=addD(c,1); }
   return out;
 }
@@ -538,7 +540,7 @@ function capacity(d){
   if(st.offDays.includes(k)) return 0;
   if(st.dayCap[k]!==undefined) return st.dayCap[k];
   if(d.getDay()===0||d.getDay()===6) return 0;          // 기본은 주 5일
-  if(d > parse(EXAM)) return 0;                 // 시험 이후는 계획하지 않는다
+  if(d > parse(PLAN_END)) return 0;             // 1/29 이후는 계획하지 않는다
   const mk=k.slice(0,7);
   if(st.monthCap && st.monthCap[mk]!==undefined) return st.monthCap[mk];
   const start=parse(st.rampStart);
@@ -563,21 +565,33 @@ function bookSlices(book, from){
   const st=S.settings, cur=S.progress[book.k+"Page"]||0;
   const out=[];
   const begin = book.from ? new Date(Math.max(parse(book.from), from)) : from;
-  const e1=parse(book.end1);
+  const e1=parse(book.end1), END=parse(PLAN_END);
+  // 1회독 — 지정된 완료일까지
   if(e1>=begin){
     const d1=studyDaysUntil(begin,e1);
     const left=book.end-Math.max(cur, book.start-1);
     if(d1.length && left>0) out.push(...alloc(d1, left, Math.max(cur,book.start-1)+1, book.speed, 1));
   }
-  let cur2=addD(e1,1), cyc=2;
-  while(cyc<=5 && cur2<=parse(EXAM)){
-    const ds=studyDays(cur2, st.cycleDays);
+  // 2회독 이후 — 남은 학습일을 회독별 소요시간 비중으로 나눈다
+  const rest=studyDaysUntil(addD(e1,1), END);
+  if(!rest.length) return out;
+  const maxC=book.maxCycle||5;
+  const specs=[];
+  for(let c=2;c<=maxC;c++){
+    const frac = c<=3 ? 1 : (c===4 ? 0.15 : 0.08);   // 4·5회독은 오답만
+    const sp = book.speed*(1+0.35*(c-1));            // 회독마다 빨라진다
+    const pages=Math.max(1, Math.round((book.end-book.start+1)*frac));
+    specs.push({c, pages, sp, hours:pages/sp});
+  }
+  const totH=specs.reduce((a,x)=>a+x.hours,0);
+  let idx=0;
+  for(let i2=0;i2<specs.length;i2++){
+    const x=specs[i2];
+    const n = (i2===specs.length-1) ? rest.length-idx
+            : Math.max(1, Math.round(rest.length*x.hours/totH));
+    const ds=rest.slice(idx, idx+n); idx+=n;
     if(!ds.length) break;
-    // 4·5회독은 오답만 — 분량이 확 준다
-    const frac = cyc<=3 ? 1 : (cyc===4 ? 0.15 : 0.08);
-    const sp = book.speed*(1+0.35*(cyc-1));
-    out.push(...alloc(ds, Math.round((book.end-book.start+1)*frac), book.start, sp, cyc));
-    cur2=addD(ds[ds.length-1],1); cyc++;
+    out.push(...alloc(ds, x.pages, book.start, x.sp, x.c));
   }
   return out;
 }
@@ -588,7 +602,7 @@ function build(){
   const t=today(), st=S.settings;
   const start = t < parse(st.rampStart) ? parse(st.rampStart) : t;
   const q=lectureQueue();
-  const days=studyDaysUntil(start, parse(EXAM));
+  const days=studyDaysUntil(start, parse(PLAN_END));
   const BK={};
   for(const b of st.books){
     const m={}; for(const x of bookSlices(b,start)) m[iso(x.date)]=x;
@@ -669,7 +683,7 @@ function renderToday(){
     const items=[
       {id:"sci", lbl:"자연과학", val:lecLabel(row.lec), sub:row.lec.length+"강 · 예습 "+fm(row.lec.reduce((a,b)=>a+b.prep,0))+" + 강의 "+fm(row.lec.reduce((a,b)=>a+b.min,0)), min:row.lecMin},
       ...row.books.map(x=>({id:x.b.k, lbl:x.b.name, val:x.s.a+" - "+x.s.b+"p",
-        sub:x.s.n+"p · "+(x.s.cycle>1?`${x.s.cycle}회독`+(x.s.cycle>3?" 오답만":""):"1회독"), min:x.s.min})),
+        sub:x.s.n+(x.b.unit||"p")+" · "+(x.s.cycle>1?`${x.s.cycle}회독`+(x.s.cycle>3?" 오답만":""):"1회독"), min:x.s.min})),
       (function(){
         const i=S.progress.traceDone||0;
         const t=TRACE[i];
@@ -714,8 +728,8 @@ function renderSched(){
       <td>${lecLabel(r.lec)}</td>
       <td class="num">${r.lec.length||""}</td>
       <td class="num">${r.lecMin?fm(r.lecMin):"—"}</td>
-      ${["mg","pt","st","ds"].map(k=>{const x=r.books.find(b=>b.b.k===k);
-        return `<td class="num">${x?x.s.a+"-"+x.s.b+"p":"—"}</td>`;}).join("")}
+      ${["mg","pt","st","ds","ex"].map(k=>{const x=r.books.find(b=>b.b.k===k);
+        return `<td class="num">${x?x.s.a+"-"+x.s.b+(x.b.unit||"p"):"—"}</td>`;}).join("")}
       <td class="est">${r.note||""}</td>
       <td class="num">${tot}</td></tr>`;
   }).join("");
@@ -760,17 +774,17 @@ function renderCyc(){
 }
 
 const ROADMAP={
-  months:[["10월",23],["11월",21],["12월",23],["1월",21],["2월",15]],
+  months:[["10월",24],["11월",21],["12월",23],["1월",21]],
   rows:[
-   ["민법",      [["연습장 1회독",25],["1회독 완료 · 2회독",25],["2회독 완료 · 3회독",30],["3회독 완료",25],["4·5회독 오답만",5]],111],
-   ["특허법",    [["연습장 1회독",12],["2회독",12],["3회독",18],["3회독 완료",14],["4·5회독 오답만",3]],59],
-   ["상표법",    [["연습장 1회독",6],["1회독 완료 · 2회독",6],["3회독",8],["4회독",6],["5회독 오답만",2]],28],
-   ["디보법",    [["",0],["문제집 1회독",5],["1회독 완료",8],["2회독",10],["",0]],23],
-   ["10개년 기출",[["",0],["",0],["",0],["1회독 착수",9],["1회독 완료 · 2회독",29]],38],
-   ["물리",      [["강의 입문 완강 → 기본 착수",20],["강의 기본 완료 → 기출 1·2단계 완결",54],["문제집 2회독",30],["문제집 3회독",22],["",0]],126],
-   ["화학",      [["강의 기출 → 객관식 → 최종 완결",48],["문제집",2],["문제집 2회독",25],["문제집 3회독",25],["",0]],100],
-   ["생물",      [["",0],["",0],["최종정리 15강",7],["",0],["",0]],7],
-   ["지구과학",  [["",0],["강의 기본 23 + 문풀 10 완결",23],["",0],["",0],["",0]],23]
+   ["민법",      [["연습장 1회독",25],["1회독 완료 · 2회독",30],["2회독 완료 · 3회독",33],["3회독 완료 · 4·5회독 오답만",23]],111],
+   ["특허법",    [["연습장 1회독",12],["1회독 완료 · 2회독",15],["3회독",18],["3회독 완료 · 4·5회독 오답만",14]],59],
+   ["상표법",    [["연습장 1회독",6],["1회독 완료 · 2회독",8],["3회독",8],["4·5회독 오답만",6]],28],
+   ["디보법",    [["",0],["문제집 1회독",6],["1회독 완료 · 2회독",9],["2회독 완료",8]],23],
+   ["10개년 기출",[["",0],["",0],["1회독 착수",8],["1회독 완료 · 2회독",30]],38],
+   ["물리",      [["강의 입문 완강 → 기본 착수",20],["강의 기본 완료 → 기출 1·2단계 완결",54],["문제집 2회독",30],["문제집 3회독",22]],126],
+   ["화학",      [["강의 기출 → 객관식 → 최종 완결",48],["문제집",2],["문제집 2회독",25],["문제집 3회독",25]],100],
+   ["생물",      [["",0],["최종정리 15강",7],["",0],["",0]],7],
+   ["지구과학",  [["",0],["강의 기본 23 + 문풀 10 완결",23],["",0],["",0]],23]
   ],
   goal:[["민법","95","95 유지"],["산재법","85","90"],["자연과학","55","75"],["평균","78.3","86.7"]]
 };
@@ -874,6 +888,7 @@ const FIELDS=[
   {k:"ptPage", l:"특허연습장", u:"p까지"},
   {k:"stPage", l:"상표연습장", u:"p까지"},
   {k:"dsPage", l:"디보법 문제집", u:"p까지"},
+  {k:"exPage", l:"10개년 기출", u:"문항까지"},
   {k:"traceDone", l:"판례 필사", u:"회차까지"}
 ];
 const DATEFLD={k:"rampStart", l:"증량 시작일", hint:"실적이 안 따라오면 이 날짜를 뒤로 미루면 된다"};
