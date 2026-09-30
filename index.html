@@ -212,10 +212,11 @@ tr.now td.d{color:var(--accent)}
 
 /* ---------- roadmap ---------- */
 table.road{min-width:820px}
+table.road thead th{position:static; top:auto}
 table.road th:first-child,table.road td:first-child{
-  position:sticky; left:0; background:var(--card); z-index:2; font-weight:600;
+  position:sticky; left:0; background:var(--card); z-index:1; font-weight:600;
   border-right:1px solid var(--line); min-width:104px}
-table.road thead th:first-child{background:var(--card2); z-index:6}
+table.road thead th:first-child{background:var(--card2); z-index:2}
 table.road td{font-size:12px; line-height:1.55; vertical-align:top}
 table.road td.m{white-space:normal; min-width:150px}
 table.road .h{display:block; font-family:"IBM Plex Mono",monospace; font-size:10.5px;
@@ -425,7 +426,7 @@ const CHEM_MAP = {"1":"1","2":"2","3":"2","4":"3","5":"3","6":"3","7":"4","8":"5
 const SETTINGS_VERSION = 8;   // 교재·속도·기간이 바뀌면 올린다
 // 배포 시점의 진도. Claude가 재산출할 때마다 갱신된다.
 // 주소창에 그냥 dangchame.github.io/study-plan 만 쳐도 이 값이 기본이 된다.
-const PUBLISHED = { at: "2026-09-30T14:46:34+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":55,"ptPage":105,"traceDone":1,"stPage":0,"dsPage":0} };
+const PUBLISHED = { at: "2026-09-30T14:54:07+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":55,"ptPage":105,"traceDone":1,"stPage":0,"dsPage":0} };
 const DEFAULTS = {
   progress:{ chemPast:2, phyIntro:4, phyBase:0, phyPast1:0, phyPast2:0, chemMC:0, chemFin:0,
              bioBase:0, bioPast:0, bioMC:0, bioFin:0, earthBase:0, earthMC:0,

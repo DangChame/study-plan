@@ -203,10 +203,11 @@ tr.now td.d{color:var(--accent)}
 
 /* ---------- roadmap ---------- */
 table.road{min-width:820px}
+table.road thead th{position:static; top:auto}
 table.road th:first-child,table.road td:first-child{
-  position:sticky; left:0; background:var(--card); z-index:2; font-weight:600;
+  position:sticky; left:0; background:var(--card); z-index:1; font-weight:600;
   border-right:1px solid var(--line); min-width:104px}
-table.road thead th:first-child{background:var(--card2); z-index:6}
+table.road thead th:first-child{background:var(--card2); z-index:2}
 table.road td{font-size:12px; line-height:1.55; vertical-align:top}
 table.road td.m{white-space:normal; min-width:150px}
 table.road .h{display:block; font-family:"IBM Plex Mono",monospace; font-size:10.5px;
