@@ -424,7 +424,7 @@ const CHEM_MAP = {"1":"1","2":"2","3":"2","4":"3","5":"3","6":"3","7":"4","8":"5
 const SETTINGS_VERSION = 8;   // 교재·속도·기간이 바뀌면 올린다
 // 배포 시점의 진도. Claude가 재산출할 때마다 갱신된다.
 // 주소창에 그냥 dangchame.github.io/study-plan 만 쳐도 이 값이 기본이 된다.
-const PUBLISHED = { at: "2026-09-30T14:56:11+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":55,"ptPage":105,"traceDone":1,"stPage":0,"dsPage":0} };
+const PUBLISHED = { at: "2026-09-30T14:59:56+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":55,"ptPage":105,"traceDone":1,"stPage":0,"dsPage":0} };
 const DEFAULTS = {
   progress:{ chemPast:2, phyIntro:4, phyBase:0, phyPast1:0, phyPast2:0, chemMC:0, chemFin:0,
              bioBase:0, bioPast:0, bioMC:0, bioFin:0, earthBase:0, earthMC:0,
@@ -432,6 +432,7 @@ const DEFAULTS = {
   settings:{
     rampStart:"2026-09-30",
     capRamp:[330],
+    monthCap:{ "2026-10":330, "2026-11":360, "2026-12":330, "2027-01":320, "2027-02":160 },
     dayCap:{ "2026-09-29":0,
       "2026-09-30":330, "2026-10-01":330, "2026-10-02":330, "2026-10-03":330,
       "2026-10-05":165, "2026-10-06":165, "2026-10-07":330, "2026-10-08":330,
@@ -487,8 +488,11 @@ const TRACE = [
   ["2-10-1","당사자적격"],
   ["2-11-1 · 2-14","소송능력과 쌍방대리"]
 ];
-const ORDER = ["chemPast","phyIntro","phyBase","phyPast1","phyPast2","chemMC","chemFin",
-               "bioBase","bioPast","bioMC","bioFin","earthBase","earthMC"];
+// 골격(학습관리_1차_전체골격.md) 순서.
+// 생물 기본 72 · 기출 30 · 객관식 30 = 103h 는 듣지 않는다(26년 8/10 득점 과목).
+const ORDER = ["chemPast","chemMC","chemFin",
+               "phyIntro","phyBase","phyPast1","phyPast2",
+               "earthBase","earthMC","bioFin"];
 
 let S = JSON.parse(JSON.stringify(DEFAULTS));
 let DB = null, dbDoc = null;
@@ -544,6 +548,9 @@ function capacity(d){
   if(st.offDays.includes(k)) return 0;
   if(st.dayCap[k]!==undefined) return st.dayCap[k];
   if(d.getDay()===0||d.getDay()===6) return 0;          // 기본은 주 5일
+  if(d > parse(EXAM)) return 0;                 // 시험 이후는 계획하지 않는다
+  const mk=k.slice(0,7);
+  if(st.monthCap && st.monthCap[mk]!==undefined) return st.monthCap[mk];
   const start=parse(st.rampStart);
   const w=Math.round((mondayOf(d)-mondayOf(start))/6048e5);
   return st.capRamp[Math.min(Math.max(w,0),st.capRamp.length-1)];
@@ -573,8 +580,9 @@ function bookSlices(book, from){
     if(d1.length && left>0) out.push(...alloc(d1, left, Math.max(cur,book.start-1)+1, book.speed, 1));
   }
   let cur2=addD(e1,1), cyc=2;
-  while(cyc<=5){
-    const ds=studyDays(cur2, st.cycleDays);
+  while(cyc<=5 && cur2<=parse(EXAM)){
+    const ds=studyDays(cur2, st.cycleDays).filter(d=>d<=parse(EXAM));
+    if(!ds.length) break;
     // 4·5회독은 오답만 — 분량이 확 준다
     const frac = cyc<=3 ? 1 : (cyc===4 ? 0.15 : 0.08);
     const sp = book.speed*(1+0.35*(cyc-1));
@@ -590,7 +598,7 @@ function build(){
   const t=today(), st=S.settings;
   const start = t < parse(st.rampStart) ? parse(st.rampStart) : t;
   const q=lectureQueue();
-  const days=studyDays(start,170);
+  const days=studyDaysUntil(start, parse(EXAM));
   const BK={};
   for(const b of st.books){
     const m={}; for(const x of bookSlices(b,start)) m[iso(x.date)]=x;
