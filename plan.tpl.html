@@ -629,8 +629,10 @@ function milestones(){
     if(d) out.push({name:c.name+" 완강", date:d});
     if(out.length>=3) break;
   }
-  const c1=parse(S.settings.cycle1End);
-  out.push({name:"민공연·특허 회독1", date:c1});
+  for(const b of S.settings.books){
+    const d=parse(b.end1);
+    if(d>=today()) out.push({name:b.name+" 1회독", date:d});
+  }
   out.sort((a,b)=>a.date-b.date);
   return out.slice(0,4);
 }
