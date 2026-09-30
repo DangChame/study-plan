@@ -424,7 +424,7 @@ const CHEM_MAP = {"1":"1","2":"2","3":"2","4":"3","5":"3","6":"3","7":"4","8":"5
 const SETTINGS_VERSION = 8;   // 교재·속도·기간이 바뀌면 올린다
 // 배포 시점의 진도. Claude가 재산출할 때마다 갱신된다.
 // 주소창에 그냥 dangchame.github.io/study-plan 만 쳐도 이 값이 기본이 된다.
-const PUBLISHED = { at: "2026-09-30T15:40:56+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":55,"ptPage":105,"traceDone":1,"stPage":0,"dsPage":0,"exPage":0} };
+const PUBLISHED = { at: "2026-09-30T15:55:15+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":55,"ptPage":105,"traceDone":1,"stPage":0,"dsPage":0,"exPage":0} };
 const DEFAULTS = {
   progress:{ chemPast:2, phyIntro:4, phyBase:0, phyPast1:0, phyPast2:0, chemMC:0, chemFin:0,
              bioBase:0, bioPast:0, bioMC:0, bioFin:0, earthBase:0, earthMC:0,
@@ -451,7 +451,7 @@ const DEFAULTS = {
       {k:"pt", name:"특허연습장",   start:2, end:362, speed:15, end1:"2026-11-06", w:0.27},
       {k:"st", name:"상표연습장",   start:1, end:68,  speed:6,  end1:"2026-11-17", w:0.16},
       {k:"ds", name:"디보법 문제집", start:1, end:200, speed:15, end1:"2026-12-11", w:0.12, from:"2026-11-02"},
-      {k:"ex", name:"10개년 기출", start:1, end:900, speed:40, end1:"2027-01-18", w:0.20, from:"2027-01-04", maxCycle:2, unit:"문"}
+      {k:"ex", name:"10개년 기출", start:1, end:800, speed:40, end1:"2027-01-18", w:0.20, from:"2027-01-04", maxCycle:2, unit:"문"}
     ],
     cycleDays:30,
     writeMin:15,
@@ -791,7 +791,7 @@ const ROADMAP={
    ["특허법",    [["연습장 1회독",12],["1회독 완료 · 2회독",15],["3회독",18],["3회독 완료 · 4·5회독 오답만",14]],59],
    ["상표법",    [["연습장 1회독",6],["1회독 완료 · 2회독",8],["3회독",8],["4·5회독 오답만",6]],28],
    ["디보법",    [["",0],["문제집 1회독",6],["1회독 완료 · 2회독",9],["2회독 완료",8]],23],
-   ["10개년 기출",[["",0],["",0],["1회독 착수",8],["1회독 완료 · 2회독",30]],38],
+   ["10개년 기출",[["",0],["",0],["1회독 착수",7],["1회독 완료 · 2회독",26]],33],
    ["물리",      [["강의 입문 완강 → 기본 착수",20],["강의 기본 완료 → 기출 1·2단계 완결",54],["문제집 2회독",30],["문제집 3회독",22]],126],
    ["화학",      [["강의 기출 → 객관식 → 최종 완결",48],["문제집",2],["문제집 2회독",25],["문제집 3회독",25]],100],
    ["생물",      [["",0],["최종정리 15강",7],["",0],["",0]],7],
