@@ -57,3 +57,30 @@ def chem_chapters(src):
         body=re.split(r'\n## 🔄',body)[0]
         out[ch]={"title":f"{ch}장 · {title}","html":md2html(body)}
     return out
+
+
+def chem_quiz(src):
+    """화학 암기시트 → 퀴즈 문항 [{q, a, sec, page}]"""
+    import re, html as H
+    def inline(t):
+        t=H.escape(t.strip())
+        t=re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', t)
+        return t.replace('&quot;','"')
+    out=[]; sec=""; page=""; chap=""
+    for line in src.split('\n'):
+        ls=line.strip()
+        m=re.match(r'^# (\d+장 · .+)$', ls)
+        if m: chap=m.group(1); continue
+        m=re.match(r'^## (.+)$', ls)
+        if m: sec=m.group(1); page=""; continue
+        m=re.match(r'^> 📖 (.+)$', ls)
+        if m: page=re.sub(r'\*\*','',m.group(1)); continue
+        if ls.startswith('|') and ls.endswith('|'):
+            cells=[c.strip() for c in ls.strip('|').split('|')]
+            if len(cells)!=2: continue
+            if cells[0] in ('물음','구분','암기시트 단원','전자쌍(EP)') or set(cells[0])<=set(':- '): continue
+            if sec.startswith('📖'): continue          # 기본서 매핑표는 문항이 아니다
+            if not cells[0] or not cells[1]: continue
+            out.append({"q":inline(cells[0]), "a":inline(cells[1]),
+                        "sec":(chap+" · " if chap else "")+sec, "page":page})
+    return out

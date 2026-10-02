@@ -201,6 +201,22 @@ tr.now td.d{color:var(--accent)}
 .rule li b{color:var(--ink)}
 .rule.warn h3 .dot{background:var(--warn)}
 
+/* ---------- chem quiz ---------- */
+.quizBox{padding:6px 20px 14px}
+.qItem{border-top:1px solid var(--line2); padding:13px 0}
+.qItem:first-child{border-top:0}
+.qTop{display:flex; gap:10px; align-items:baseline}
+.qNo{flex:0 0 auto; font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600;
+  color:var(--faint); min-width:17px; padding-top:2px}
+.qQ{flex:1; font-size:14.5px; font-weight:600; line-height:1.6; word-break:keep-all}
+.qMeta{font-size:10.5px; color:var(--faint); margin:5px 0 0 27px; font-family:"IBM Plex Mono",monospace}
+.qA{margin:9px 0 0 27px; padding:11px 13px; border-radius:8px; background:var(--card2);
+  border:1px solid var(--line2); font-size:13.5px; line-height:1.68; color:var(--ink2); word-break:keep-all}
+.qA[hidden]{display:none}
+.qBtn{margin:8px 0 0 27px; font-size:12px; padding:5px 12px; border-radius:7px}
+.quizBar{display:flex; gap:9px; align-items:center; flex-wrap:wrap; padding:14px 0 4px; border-bottom:1px solid var(--line)}
+.quizBar .rng{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--muted); margin-left:auto}
+
 /* ---------- roadmap ---------- */
 table.road{min-width:820px}
 table.road th:first-child,table.road td:first-child{
@@ -262,6 +278,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
     <nav>
       <a href="#today">오늘</a>
       <a href="#read">읽을 것</a>
+      <a href="#quiz">화학</a>
       <a href="#road">골격</a>
       <a href="#progress">진도 입력</a>
       <a href="#schedule">일정</a>
@@ -308,9 +325,19 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
   <div class="card reader" id="reader"></div>
 </section>
 
-<section id="road">
+<section id="quiz">
   <div class="shead">
     <span class="eyebrow">02</span>
+    <h2>오늘의 화학</h2>
+    <p id="quizSub">매일 8문항 · 답은 눌러야 보인다</p>
+  </div>
+  <div class="card quizBox" id="quizBox"></div>
+  <p class="hint" id="quizHint"></p>
+</section>
+
+<section id="road">
+  <div class="shead">
+    <span class="eyebrow">03</span>
     <h2>시험까지 골격</h2>
     <p>9/30 → <b>1/29</b> · 학습일 89일 · 519시간 · 2월은 비워 둔다</p>
   </div>
@@ -322,7 +349,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
 
 <section id="progress">
   <div class="shead">
-    <span class="eyebrow">03</span>
+    <span class="eyebrow">04</span>
     <h2>진도 입력</h2>
     <p>여기 숫자만 고치면 아래 일정이 전부 다시 깔린다.</p>
   </div>
@@ -344,7 +371,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
 
 <section id="schedule">
   <div class="shead">
-    <span class="eyebrow">04</span>
+    <span class="eyebrow">05</span>
     <h2>일정</h2>
     <p id="schedSub"></p>
   </div>
@@ -369,7 +396,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
 
 <section id="cycles">
   <div class="shead">
-    <span class="eyebrow">05</span>
+    <span class="eyebrow">06</span>
     <h2>회독</h2>
     <p>4과목 · 3회독까지 전문항, 4·5회독은 오답만</p>
   </div>
@@ -388,7 +415,7 @@ footer .fl{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap
 
 <section id="rules">
   <div class="shead">
-    <span class="eyebrow">06</span>
+    <span class="eyebrow">07</span>
     <h2>규칙</h2>
     <p>계획을 다시 짤 때 지켜야 하는 것들</p>
   </div>
@@ -408,6 +435,7 @@ const INV = /*INVENTORY*/;
 const TRACE_BODY = /*TRACE_BODY*/;
 const CHEM_SHEET = /*CHEM_SHEET*/;
 const CHEM_MAP = /*CHEM_MAP*/;
+const CHEM_QUIZ = /*CHEM_QUIZ*/;
 
 /* ---------------- 기본 설정 ---------------- */
 const SETTINGS_VERSION = 8;   // 교재·속도·기간이 바뀌면 올린다
@@ -816,6 +844,38 @@ function renderRoad(){
       <div class="mrow"><span>전 과목 3회독</span><b>1월</b></div>
       <div class="mrow"><span>기출 2회독 마무리</span><b>2월</b></div></div>`;
 }
+// 매일 8문항씩 순환. 날짜를 기준으로 정해지므로 하루 안에서는 늘 같은 문제가 나온다.
+const QUIZ_PER_DAY=8;
+let quizShowAll=false;
+function quizToday(){
+  if(!CHEM_QUIZ.length) return {items:[],from:0,round:1};
+  const base=parse("2026-10-02");
+  const n=Math.max(0, Math.round((today()-base)/864e5));
+  const from=(n*QUIZ_PER_DAY)%CHEM_QUIZ.length;
+  const round=Math.floor((n*QUIZ_PER_DAY)/CHEM_QUIZ.length)+1;
+  const items=[];
+  for(let i=0;i<Math.min(QUIZ_PER_DAY,CHEM_QUIZ.length);i++)
+    items.push(CHEM_QUIZ[(from+i)%CHEM_QUIZ.length]);
+  return {items,from,round};
+}
+function renderQuiz(){
+  const box=document.getElementById("quizBox");
+  if(!CHEM_QUIZ.length){ box.innerHTML='<p class="rmiss">암기 시트에 문항이 없다.</p>'; return; }
+  const {items,from,round}=quizToday();
+  document.getElementById("quizSub").textContent=
+    `매일 ${QUIZ_PER_DAY}문항 · 답은 눌러야 보인다 · 전체 ${CHEM_QUIZ.length}문항 ${round}회전째`;
+  box.innerHTML=
+    `<div class="quizBar"><button id="qAll">${quizShowAll?"답 모두 숨기기":"답 모두 보기"}</button>`+
+    `<span class="rng">${from+1} - ${from+items.length} / ${CHEM_QUIZ.length}</span></div>`+
+    items.map((x,i)=>`<div class="qItem">
+      <div class="qTop"><span class="qNo">${i+1}</span><span class="qQ">${x.q}</span></div>
+      <div class="qMeta">${x.sec}${x.page?" · "+x.page:""}</div>
+      <button class="qBtn" data-a="${i}">답 보기</button>
+      <div class="qA" id="qa${i}" ${quizShowAll?"":"hidden"}>${x.a}</div>
+    </div>`).join("");
+  document.getElementById("quizHint").textContent=
+    "강의가 없는 날에도 돈다. 화학은 26년에 1/10이었고, 놓으면 그대로 굳는다.";
+}
 let readScope="trace";
 function renderRead(){
   const t=today();
@@ -912,7 +972,7 @@ function renderInputs(){
 }
 
 function renderAll(){
-  build(); renderToday(); renderSched(); renderCyc(); renderRead(); renderRoad();
+  build(); renderToday(); renderSched(); renderCyc(); renderRead(); renderRoad(); renderQuiz();
   document.getElementById("schedTabs").innerHTML=
     ['all','9','10','11','12'].map(s=>`<button data-s="${s}" aria-selected="${schedScope===s}">${s==='all'?'전체':s+'월'}</button>`).join("");
   const at=S.updatedAt||PUBLISHED.at;
@@ -930,6 +990,10 @@ document.addEventListener("click",e=>{
   if(ct){ cycScope=ct.dataset.c; renderCyc(); return; }
   const rt=e.target.closest("#readTabs button");
   if(rt){ readScope=rt.dataset.r; renderRead(); return; }
+  const qb=e.target.closest(".qBtn");
+  if(qb){ const el=document.getElementById("qa"+qb.dataset.a);
+    el.hidden=!el.hidden; qb.textContent=el.hidden?"답 보기":"답 숨기기"; return; }
+  if(e.target.closest("#qAll")){ quizShowAll=!quizShowAll; renderQuiz(); return; }
 });
 // 체크하면 그 즉시 진도가 올라간다. 체크를 풀면 되돌아간다.
 function applyChecks(){
