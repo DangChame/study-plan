@@ -562,7 +562,8 @@ function alloc(days, total, startPage, speed, cycle){
 }
 // 책 하나의 회독 일정. 1회독은 지정된 완료일까지, 이후는 cycleDays 주기.
 function bookSlices(book, from){
-  const st=S.settings, cur=S.progress[book.k+"Page"]||0;
+  // 오늘 계획이 흔들리지 않도록 "오늘 아침 진도"를 기준으로 삼는다 (체크해도 범위가 안 바뀜)
+  const st=S.settings, cur=basis()[book.k+"Page"]||0;
   const out=[];
   const begin = book.from ? new Date(Math.max(parse(book.from), from)) : from;
   const e1=parse(book.end1), END=parse(PLAN_END);

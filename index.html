@@ -424,7 +424,7 @@ const CHEM_MAP = {"1":"1","2":"2","3":"2","4":"3","5":"3","6":"3","7":"4","8":"5
 const SETTINGS_VERSION = 8;   // 교재·속도·기간이 바뀌면 올린다
 // 배포 시점의 진도. Claude가 재산출할 때마다 갱신된다.
 // 주소창에 그냥 dangchame.github.io/study-plan 만 쳐도 이 값이 기본이 된다.
-const PUBLISHED = { at: "2026-10-02T14:14:02+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":55,"ptPage":105,"traceDone":1,"stPage":1,"dsPage":0,"exPage":0} };
+const PUBLISHED = { at: "2026-10-02T14:16:21+09:00", progress: {"chemPast":2,"phyIntro":4,"phyBase":0,"phyPast1":0,"phyPast2":0,"chemMC":0,"chemFin":0,"bioBase":0,"bioPast":0,"bioMC":0,"bioFin":0,"earthBase":0,"earthMC":0,"mgPage":55,"ptPage":105,"traceDone":1,"stPage":1,"dsPage":0,"exPage":0} };
 const DEFAULTS = {
   progress:{ chemPast:2, phyIntro:4, phyBase:0, phyPast1:0, phyPast2:0, chemMC:0, chemFin:0,
              bioBase:0, bioPast:0, bioMC:0, bioFin:0, earthBase:0, earthMC:0,
@@ -573,7 +573,8 @@ function alloc(days, total, startPage, speed, cycle){
 }
 // 책 하나의 회독 일정. 1회독은 지정된 완료일까지, 이후는 cycleDays 주기.
 function bookSlices(book, from){
-  const st=S.settings, cur=S.progress[book.k+"Page"]||0;
+  // 오늘 계획이 흔들리지 않도록 "오늘 아침 진도"를 기준으로 삼는다 (체크해도 범위가 안 바뀜)
+  const st=S.settings, cur=basis()[book.k+"Page"]||0;
   const out=[];
   const begin = book.from ? new Date(Math.max(parse(book.from), from)) : from;
   const e1=parse(book.end1), END=parse(PLAN_END);
